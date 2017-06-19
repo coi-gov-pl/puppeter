@@ -1,0 +1,3 @@
+"""
+A puppeter settings file
+"""
