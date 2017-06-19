@@ -4,14 +4,27 @@
 # Always prefer setuptools over distutils
 from setuptools import setup, find_packages
 # To use a consistent encoding
-from codecs import open
-from os import path
+import codecs
+import os
+import re
 
-here = path.abspath(path.dirname(__file__))
+here = os.path.abspath(os.path.dirname(__file__))
 
-# Get the long description from the README file
-with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
-    long_description = f.read()
+
+def read(*parts):
+    # intentionally *not* adding an encoding option to open, See:
+    #   https://github.com/pypa/virtualenv/issues/201#issuecomment-3145690
+    return codecs.open(os.path.join(here, *parts), 'r').read()
+
+
+def find_version(*file_paths):
+    version_file = read(*file_paths)
+    version_match = re.search(r"^__version__ = ['\"]([^'\"]*)['\"]",
+                              version_file, re.M)
+    if version_match:
+        return version_match.group(1)
+    raise RuntimeError("Unable to find version string.")
+
 
 setup(
     name='puppeter',
@@ -19,10 +32,11 @@ setup(
     # Versions should comply with PEP440.  For a discussion on single-sourcing
     # the version across setup.py and the project code, see
     # https://packaging.python.org/en/latest/single_source_version.html
-    version='0.1.0',
+    version=find_version('puppeter', '__init__.py'),
 
     description='Puppeter - an automatic puppet installer',
-    long_description=long_description,
+    # Get the long description from the README file
+    long_description=read('README.rst'),
 
     # The project's main homepage.
     url='https://github.com/coi-gov-pl/puppeter',
