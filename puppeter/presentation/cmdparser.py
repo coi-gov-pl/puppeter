@@ -1,8 +1,7 @@
 import argparse
 import sys
 import puppeter
-from puppeter.presentation.interactiveapp import InteractiveApp
-from puppeter.presentation.unattendedapp import UnattendedApp
+from puppeter.presentation.appfactory import AppFactory
 
 
 class _VersionAction(argparse.Action):
@@ -40,13 +39,15 @@ class StdErrArgumentParser(argparse.ArgumentParser):
 
 class CommandLineParser(object):
     """CommandLineParser for Puppeter"""
-    def __init__(self, argv):
+    def __init__(self, argv, appfactory=AppFactory()):
         super(CommandLineParser, self).__init__()
         self.__argv = argv[1:]
+        self.__appfactory = appfactory
 
     def parse(self):
         parser = StdErrArgumentParser(prog='puppeter', description='Puppeter - an automatic puppet installer',
-                                      epilog='By default intercative setup is porformed')
+                                      epilog='By default interactive setup is performed and chosen values can be saved'
+                                      ' to answer file.')
         parser.add_argument('--answers', '-a', type=argparse.FileType('r'),
                             metavar='FILE',
                             help='An answer file to be used to perform unattended setup')
@@ -57,8 +58,6 @@ class CommandLineParser(object):
                             help='Executes setup commands instead of printing them')
 
         parsed = parser.parse_args(self.__argv)
-        if parsed.answers is None:
-            app = InteractiveApp(parsed)
-        else:
-            app = UnattendedApp(parsed)
+        factory = self.__appfactory.interactive if parsed.answers is None else self.__appfactory.unattended
+        app = factory(parsed)
         return app

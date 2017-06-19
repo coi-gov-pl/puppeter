@@ -1,5 +1,5 @@
 from puppeter.domain.os import OsFamily, OperatingSystem
-from puppeter.persitance.os import Facter
+from puppeter.persistence.os import Facter
 
 
 def test_osfamily():

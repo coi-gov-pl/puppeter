@@ -1,6 +1,6 @@
 import platform
 from puppeter.domain.os import OsFamily, OperatingSystem
-from puppeter.persitance.facter import Facter as __Facter
+from puppeter.persistence.facter import Facter as __Facter
 
 Facter = __Facter
 
