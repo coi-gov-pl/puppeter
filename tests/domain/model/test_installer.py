@@ -1,6 +1,6 @@
 def test_rubygems_installer_named_bean():
     # given
-    from puppeter.domain.puppet_installer import RubygemsInstaller
+    from puppeter.domain.model.installer import RubygemsInstaller
     installer = RubygemsInstaller()
     # when
     bean_name = installer.get_bean_name()
@@ -10,7 +10,7 @@ def test_rubygems_installer_named_bean():
 
 def test_rubygems_installer_values():
     # given
-    from puppeter.domain.puppet_installer import RubygemsInstaller, Mode
+    from puppeter.domain.model.installer import RubygemsInstaller, Mode
     installer = RubygemsInstaller()
     # when
     version = installer.version()
@@ -22,7 +22,7 @@ def test_rubygems_installer_values():
 
 def test_rubygems_installer_raw_options():
     # given
-    from puppeter.domain.puppet_installer import RubygemsInstaller
+    from puppeter.domain.model.installer import RubygemsInstaller
     installer = RubygemsInstaller()
     # when
     options = installer.raw_options()
@@ -36,7 +36,7 @@ def test_rubygems_installer_raw_options():
 
 def test_rubygems_installer_read_raw_options():
     # given
-    from puppeter.domain.puppet_installer import RubygemsInstaller, Mode
+    from puppeter.domain.model.installer import RubygemsInstaller, Mode
     installer = RubygemsInstaller()
     # when
     installer.read_raw_options({
@@ -52,7 +52,7 @@ def test_rubygems_installer_read_raw_options():
 
 def test_getting_impl_from_container():
     # given
-    from puppeter.domain.puppet_installer import Installer, Mode
+    from puppeter.domain.model.installer import Installer, Mode
     from puppeter import container
 
     # when

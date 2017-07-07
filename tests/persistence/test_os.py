@@ -1,4 +1,4 @@
-from puppeter.domain.os import OsFamily, OperatingSystem
+from puppeter.domain.model.os import OsFamily, OperatingSystem
 from puppeter.persistence.os import Facter
 
 

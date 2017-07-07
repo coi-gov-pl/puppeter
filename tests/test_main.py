@@ -1,3 +1,4 @@
+from puppeter.main import main
 import puppeter
 import pytest
 import re
@@ -7,7 +8,7 @@ from tests.helpers.commandline import captured_output
 def test_usage_printout():
     with pytest.raises(SystemExit) as sysexit:
         with captured_output() as (out, err):
-            puppeter.main(['puppeter', '--help'])
+            main(['puppeter', '--help'])
 
     stdout = out.getvalue().strip()
     stderr = err.getvalue().strip()
@@ -21,7 +22,7 @@ def test_usage_printout():
 def test_version():
     with pytest.raises(SystemExit) as sysexit:
         with captured_output() as (out, err):
-            puppeter.main(['puppeter', '--version'])
+            main(['puppeter', '--version'])
 
     stdout = out.getvalue().strip()
     stderr = err.getvalue().strip()
