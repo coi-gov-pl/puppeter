@@ -1,3 +1,4 @@
+import puppeter
 from puppeter import container
 from puppeter.domain.model.installer import Installer
 from puppeter.domain.model.answers import Answers
@@ -17,6 +18,8 @@ class YamlAnswersGateway(AnswersGateway):
 
     def read_answers_from_file(self, file):
         code = ruamel.yaml.load(file.read(), ruamel.yaml.RoundTripLoader)
+        log = puppeter.get_logger(YamlAnswersGateway)
+        log.debug("Answers loaded from file: %s", code)
         installer = self.__load_installer(code['installer'])
         return Answers(
             installer=installer

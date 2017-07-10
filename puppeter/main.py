@@ -5,6 +5,15 @@ from os.path import dirname
 from puppeter import __program__
 from puppeter.presentation.cmdparser import CommandLineParser
 
+
+def main(argv=sys.argv):
+    """Entry point for the puppeter application"""
+    __load_modules(__program__)
+    parser = CommandLineParser(argv)
+    app = parser.parse()
+    app.run()
+
+
 __ROOT_DIR = dirname(dirname(__file__))
 
 
@@ -24,11 +33,3 @@ def __load_modules(module_name):
     # load the modules
     for module_name_to_import in modules:
         __import__(module_name_to_import)
-
-
-def main(argv=sys.argv):
-    """Entry point for the puppeter application"""
-    __load_modules(__program__)
-    parser = CommandLineParser(argv)
-    app = parser.parse()
-    app.run()

@@ -52,7 +52,7 @@ class CommandLineParser(object):
                             metavar='FILE',
                             help='An answer file to be used to perform unattended setup')
         parser.add_argument('--verbose', '-v', action='count',
-                            help='Print more verbose output (up to 3 verbosity flags are supported)')
+                            help='Print more verbose output (up to 2 verbosity flags are supported)')
         parser.add_argument('--version', action=_VersionAction, version='%(prog)s ' + puppeter.__version__)
         parser.add_argument('--execute', '-e', action='store_true',
                             help='Executes setup commands instead of printing them')
