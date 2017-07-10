@@ -13,9 +13,11 @@ class Installer:
         self.__mode = Mode.Agent
 
     def raw_options(self):
+        # noinspection PyUnresolvedReferences
+        installer_type = self.bean_name()
         return {
           'mode': self.__mode.name,
-          'type': self.get_bean_name()
+          'type': installer_type
         }
 
     def read_raw_options(self, options):

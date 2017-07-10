@@ -3,7 +3,7 @@ def test_rubygems_installer_named_bean():
     from puppeter.domain.model.installer import RubygemsInstaller
     installer = RubygemsInstaller()
     # when
-    bean_name = installer.get_bean_name()
+    bean_name = installer.bean_name()
     # then
     assert bean_name is 'gem'
 
@@ -60,4 +60,17 @@ def test_getting_impl_from_container():
 
     # then
     assert installer.mode() is Mode.Agent
-    assert installer.get_bean_name() is 'pc3x'
+    assert installer.bean_name() is 'pc3x'
+
+
+def test_getting_all_impls_from_container():
+    # given
+    from puppeter.domain.model.installer import Installer, Collection5xInstaller
+    from puppeter import container
+
+    # when
+    installers = container.get_all(Installer)
+
+    # then
+    assert len(installers) >= 4
+    assert len(tuple(filter(lambda cls: isinstance(cls, Collection5xInstaller), installers))) == 1

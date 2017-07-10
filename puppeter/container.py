@@ -4,8 +4,11 @@ def Named(bean_name):
             def __init__(self, *args):
                 self.wrapped = cls(*args)
 
-            def get_bean_name(self):
+            def bean_name(self):
                 return bean_name
+
+            def __repr__(self):
+                return '@Named(\'%s\') %s' % (bean_name, repr(self.wrapped))
 
             def __getattr__(self, name):
                 return getattr(self.wrapped, name)
@@ -14,29 +17,21 @@ def Named(bean_name):
 
 
 def bind(cls, impl_cls):
-    try:
-        lst = __beans[cls]
-    except:
-        lst = []
-        __beans[cls] = lst
-    lst.append(__Bean(cls, impl_cls=impl_cls))
+    beans = __get_all_beans(cls)
+    beans.append(__Bean(cls, impl_cls=impl_cls))
 
 
 def bind_to_instance(cls, impl):
-    try:
-        lst = __beans[cls]
-    except:
-        lst = []
-        __beans[cls] = lst
-    lst.append(__Bean(cls, impl=impl))
+    beans = __get_all_beans(cls)
+    beans.append(__Bean(cls, impl=impl))
 
 
 def get_all(cls):
+    beans = __get_all_beans(cls)
     try:
-        beans = __beans[cls]
-        return list(map(lambda bean: bean.impl(), beans))
-    except:
-        return []
+        return tuple(map(lambda bean: bean.impl(), beans))
+    except Exception:
+        return tuple()
 
 
 def get(cls):
@@ -63,8 +58,10 @@ __beans = {}
 def __get_all_beans(cls):
     try:
         return __beans[cls]
-    except:
-        return []
+    except KeyError:
+        lst = []
+        __beans[cls] = lst
+        return lst
 
 
 class __Bean:
@@ -79,13 +76,9 @@ class __Bean:
         return self.__impl_cls
 
     def name(self):
-        if self.__impl is not None:
-            return self.__impl.get_bean_name()
-        else:
-            return self.__impl_cls().get_bean_name()
+        return self.impl().bean_name()
 
     def impl(self):
-        if self.__impl is not None:
-            return self.__impl
-        else:
-            return self.__impl_cls()
+        if self.__impl is None:
+            self.__impl = self.__impl_cls()
+        return self.__impl
