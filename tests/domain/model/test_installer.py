@@ -56,7 +56,7 @@ def test_getting_impl_from_container():
     from puppeter import container
 
     # when
-    installer = container.get(Installer, 'pc3x')
+    installer = container.get_named(Installer, 'pc3x')
 
     # then
     assert installer.mode() is Mode.Agent

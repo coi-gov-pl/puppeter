@@ -34,12 +34,23 @@ def bind_to_instance(cls, impl):
 def get_all(cls):
     try:
         beans = __beans[cls]
-        return map(lambda bean: bean.impl, beans)
+        return list(map(lambda bean: bean.impl(), beans))
     except:
         return []
 
 
-def get(cls, bean_name):
+def get(cls):
+    beans = __get_all_beans(cls)
+    if len(beans) == 1:
+        return beans[0].impl()
+    else:
+        impls = list(map(lambda bean: bean.impl_cls_name(), beans))
+        raise ValueError('Zero or more then one implementation found for class %s. '
+                         'Found those implementations: %s. '
+                         'Use @Named beans and get_named() function!' % (cls, impls))
+
+
+def get_named(cls, bean_name):
     for bean in __get_all_beans(cls):
         if bean.name() == bean_name:
             return bean.impl()
@@ -63,6 +74,9 @@ class __Bean:
         self.__cls = cls
         self.__impl = impl
         self.__impl_cls = impl_cls
+
+    def impl_cls_name(self):
+        return self.__impl_cls
 
     def name(self):
         if self.__impl is not None:

@@ -25,9 +25,6 @@ class YamlAnswersGateway(AnswersGateway):
     @staticmethod
     def __load_installer(options):
         bean_name = options['type']
-        installer = container.get(Installer, bean_name)
+        installer = container.get_named(Installer, bean_name)
         installer.read_raw_options(options)
         return installer
-
-
-container.bind(AnswersGateway, YamlAnswersGateway)

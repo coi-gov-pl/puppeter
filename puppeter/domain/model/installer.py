@@ -1,4 +1,3 @@
-from puppeter import container
 from puppeter.container import Named
 from enum import Enum
 
@@ -71,9 +70,3 @@ class Collection4xInstaller(CollectionInstaller):
 @Named('pc5x')
 class Collection5xInstaller(CollectionInstaller):
     pass
-
-
-container.bind(Installer, RubygemsInstaller)
-container.bind(Installer, Collection3xInstaller)
-container.bind(Installer, Collection4xInstaller)
-container.bind(Installer, Collection5xInstaller)
