@@ -95,7 +95,8 @@ setup(
     # https://packaging.python.org/en/latest/requirements.html
     install_requires=[
         'six',
-        'ruamel.yaml<0.15'
+        'ruamel.yaml<0.15',
+        'distro'
     ],
 
     # List additional groups of dependencies here (e.g. development

@@ -1,11 +1,18 @@
 def Named(bean_name):
     def named_decorator(cls):
-        class NamedBean(cls):
-            def __init__(self, *args):
-                self.wrapped = cls(*args)
+        cls.__bean_name = bean_name
 
-            def bean_name(self):
+        class NamedBean(cls):
+            def __init__(self, *args, **kwargs):
+                self.wrapped = cls(*args, **kwargs)
+
+            @staticmethod
+            def bean_name():
                 return bean_name
+
+            @staticmethod
+            def original_cls():
+                return cls
 
             def __repr__(self):
                 return '@Named(\'%s\') %s' % (bean_name, repr(self.wrapped))
@@ -26,18 +33,18 @@ def bind_to_instance(cls, impl):
     beans.append(__Bean(cls, impl=impl))
 
 
-def get_all(cls):
+def get_all(cls, *args, **kwargs):
     beans = __get_all_beans(cls)
     try:
-        return tuple(map(lambda bean: bean.impl(), beans))
+        return tuple(map(lambda bean: bean.impl(*args, **kwargs), beans))
     except Exception:
         return tuple()
 
 
-def get(cls):
+def get(cls, *args, **kwargs):
     beans = __get_all_beans(cls)
     if len(beans) == 1:
-        return beans[0].impl()
+        return beans[0].impl(*args, **kwargs)
     else:
         impls = list(map(lambda bean: bean.impl_cls_name(), beans))
         raise ValueError('Zero or more then one implementation found for class %s. '
@@ -45,10 +52,10 @@ def get(cls):
                          'Use @Named beans and get_named() function!' % (cls, impls))
 
 
-def get_named(cls, bean_name):
+def get_named(cls, bean_name, *args, **kwargs):
     for bean in __get_all_beans(cls):
         if bean.name() == bean_name:
-            return bean.impl()
+            return bean.impl(*args, **kwargs)
     raise ValueError('Bean named %s has not been found for class %s' % (bean_name, cls))
 
 
@@ -72,13 +79,29 @@ class __Bean:
         self.__impl = impl
         self.__impl_cls = impl_cls
 
+    def __repr__(self):
+        name = self.name()
+        if name is not None:
+            return 'Bean named \'%s\' of %s' % (name, repr(self.impl_cls()))
+        else:
+            return 'Bean of %s' % repr(self.impl_cls())
+
     def impl_cls_name(self):
         return self.__impl_cls
 
-    def name(self):
-        return self.impl().bean_name()
-
-    def impl(self):
+    def impl_cls(self):
         if self.__impl is None:
-            self.__impl = self.__impl_cls()
+            return self.__impl_cls
+        else:
+            return self.__impl.__class__
+
+    def name(self):
+        try:
+            return self.impl_cls().bean_name()
+        except AttributeError:
+            return None
+
+    def impl(self, *args, **kwargs):
+        if self.__impl is None:
+            self.__impl = self.__impl_cls(*args, **kwargs)
         return self.__impl

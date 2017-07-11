@@ -5,8 +5,8 @@ from logging import StreamHandler
 from logging.handlers import SysLogHandler
 
 import puppeter
-from puppeter.domain.model.os import OsFamily
-from puppeter.persistence.os import Facter
+from puppeter.domain.facter import Facter
+from puppeter.domain.model.osfacts import OsFamily
 
 
 class App:

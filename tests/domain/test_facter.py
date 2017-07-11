@@ -1,4 +1,4 @@
-from puppeter.persistence.facter import Facter
+from puppeter.domain.facter import Facter
 
 TEST_KEY = 'some-key'
 

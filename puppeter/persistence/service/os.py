@@ -1,14 +1,15 @@
 import platform
 
-from puppeter.domain.model.os import OsFamily, OperatingSystem
-from puppeter.persistence.facter import Facter as __Facter
+import distro
 
-Facter = __Facter
+from puppeter.domain.facter import Facter
+from puppeter.domain.model.osfacts import OsFamily, OperatingSystem, \
+    OperatingSystemRelease, OperatingSystemCodename
 
 
-def __calculate_operatingsystem():
+def calculate_operatingsystem():
     if platform.system() == 'Linux':
-        dist = platform.linux_distribution()[0]
+        dist = distro.linux_distribution(full_distribution_name=False)[0]
         return {
             'centos': OperatingSystem.CentOS,
             'oracle linux server': OperatingSystem.OracleLinux,
@@ -21,7 +22,7 @@ def __calculate_operatingsystem():
     return OperatingSystem.Unknown
 
 
-def __calculate_osfamily():
+def calculate_osfamily():
     return {
         OperatingSystem.CentOS: OsFamily.RedHat,
         OperatingSystem.OracleLinux: OsFamily.RedHat,
@@ -30,8 +31,18 @@ def __calculate_osfamily():
         OperatingSystem.Debian: OsFamily.Debian,
         OperatingSystem.Ubuntu: OsFamily.Debian,
         OperatingSystem.OpenSuse: OsFamily.Suse
-    }.get(__Facter.get(OperatingSystem), OsFamily.Unknown)
+    }.get(Facter.get(OperatingSystem), OsFamily.Unknown)
 
 
-__Facter.set(OperatingSystem, __calculate_operatingsystem)
-__Facter.set(OsFamily, __calculate_osfamily)
+def calculate_osrelease():
+    if platform.system() == 'Linux':
+        release = distro.linux_distribution(full_distribution_name=False)[1]
+        return OperatingSystemRelease(release.strip())
+    return None
+
+
+def calculate_oscodename():
+    if platform.system() == 'Linux':
+        codename = distro.linux_distribution(full_distribution_name=False)[2]
+        return OperatingSystemCodename(codename.strip().split(' ')[0].lower())
+    return None
