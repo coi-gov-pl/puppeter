@@ -25,7 +25,7 @@ class App:
     @staticmethod
     def __stderr_handler():
         handler = StreamHandler(stream=sys.stderr)
-        fmt = '%(levelname)s: %(message)s'
+        fmt = '# %(levelname)s: %(message)s'
         handler.setFormatter(ColoredFormatter(fmt=fmt))
         handler.setLevel(logging.NOTSET)
         return handler

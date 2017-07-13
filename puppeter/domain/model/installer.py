@@ -10,7 +10,7 @@ class Mode(Enum):
 
 class Installer:
     def __init__(self):
-        self.__mode = Mode.Agent
+        self.__mode = Mode.Agent  # type: Mode
 
     def raw_options(self):
         # noinspection PyUnresolvedReferences
@@ -27,6 +27,7 @@ class Installer:
             pass
 
     def mode(self):
+        # type: () -> Mode
         return self.__mode
 
 

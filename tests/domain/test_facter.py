@@ -10,13 +10,15 @@ def test_facter_get_unknown():
 
 
 def test_invalid_resolver():
+    # noinspection PyUnresolvedReferences,PyProtectedMember
+    resolvers = Facter._Facter__resolvers
+    before_count = len(resolvers)
     try:
-        before_count = len(Facter._Facter__resolvers)
         Facter.set(TEST_KEY, lambda: None)
         value = Facter.get(TEST_KEY)
 
         assert value is None
-        assert len(Facter._Facter__resolvers) == before_count + 1
+        assert len(resolvers) == before_count + 1
     finally:
-        Facter._Facter__resolvers.pop(TEST_KEY)
-        assert len(Facter._Facter__resolvers) == before_count
+        resolvers.pop(TEST_KEY)
+        assert len(resolvers) == before_count

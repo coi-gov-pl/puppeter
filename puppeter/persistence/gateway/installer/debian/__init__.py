@@ -2,9 +2,9 @@ from puppeter import container
 from puppeter.container import Named
 from puppeter.domain.model.configurer import Configurer
 from puppeter.domain.gateway.installer import InstallerGateway
-from puppeter.persistence.gateway.installer.debian.pc3x import PC3xConfigurer
-from puppeter.persistence.gateway.installer.debian.pc4x import PC4xConfigurer
-from puppeter.persistence.gateway.installer.debian.pc5x import PC5xConfigurer
+from puppeter.persistence.gateway.installer.debian.pc3x import DebianPC3xConfigurer
+from puppeter.persistence.gateway.installer.debian.pc4x import DebianPC4xConfigurer
+from puppeter.persistence.gateway.installer.debian.pc5x import DebianPC5xConfigurer
 
 
 @Named('debian')
@@ -19,6 +19,6 @@ class DebianInstallerGateway(InstallerGateway):
 
 
 container.bind(InstallerGateway, DebianInstallerGateway)
-container.bind(Configurer, PC3xConfigurer)
-container.bind(Configurer, PC4xConfigurer)
-container.bind(Configurer, PC5xConfigurer)
+container.bind(Configurer, DebianPC3xConfigurer)
+container.bind(Configurer, DebianPC4xConfigurer)
+container.bind(Configurer, DebianPC5xConfigurer)
