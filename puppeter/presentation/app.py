@@ -24,6 +24,7 @@ class App:
 
     @staticmethod
     def __stderr_handler():
+        # type: () -> logging.Handler
         handler = StreamHandler(stream=sys.stderr)
         fmt = '# %(levelname)s: %(message)s'
         handler.setFormatter(ColoredFormatter(fmt=fmt))
@@ -32,9 +33,13 @@ class App:
 
     @staticmethod
     def __syslog_handler():
+        # type: () -> logging.Handler
         osfamily = Facter.get(OsFamily)
         if osfamily in (OsFamily.Debian, OsFamily.RedHat, OsFamily.Suse):
-            handler = SysLogHandler(address='/dev/log')
+            try:
+                handler = SysLogHandler(address='/dev/log')
+            except EnvironmentError:
+                handler = SysLogHandler()
         else:
             handler = SysLogHandler()
         fmt = puppeter.__program__ + '[%(process)d]: %(levelname)s %(name)s - %(message)s'
