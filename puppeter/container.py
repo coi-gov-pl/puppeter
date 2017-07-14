@@ -1,3 +1,12 @@
+from os.path import dirname
+
+from puppeter import __program__
+
+
+def initialize():
+    __load_modules(__program__)
+
+
 def Named(bean_name):
     def named_decorator(cls):
         cls.__bean_name = bean_name
@@ -59,6 +68,7 @@ def get_named(cls, bean_name, *args, **kwargs):
     raise ValueError('Bean named %s has not been found for class %s' % (bean_name, cls))
 
 
+__ROOT_DIR = dirname(dirname(__file__))
 __beans = {}
 
 
@@ -105,3 +115,21 @@ class __Bean:
         if self.__impl is None:
             self.__impl = self.__impl_cls(*args, **kwargs)
         return self.__impl
+
+
+def __load_modules(module_name):
+    import os
+    from os.path import join, abspath, isdir, exists
+
+    search = join(abspath(__ROOT_DIR), module_name.replace('.', os.sep))
+    lst = os.listdir(search)
+    modules = []
+    for d in lst:
+        subpath = join(search, d)
+        if isdir(subpath) and exists(join(subpath, '__init__.py')):
+            submodule_name = module_name + '.' + d
+            __load_modules(submodule_name)
+            modules.append(submodule_name)
+    # load the modules
+    for module_name_to_import in modules:
+        __import__(module_name_to_import)

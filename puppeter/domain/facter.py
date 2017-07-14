@@ -2,17 +2,17 @@ class Facter:
     """
     A nano version of Puppet's Facter
     """
-    __facts = {}
+    _facts = {}
     __resolvers = {}
 
     @staticmethod
     def get(enumvar):
-        if enumvar in Facter.__facts:
-            return Facter.__facts[enumvar]
+        if enumvar in Facter._facts:
+            return Facter._facts[enumvar]
         elif enumvar in Facter.__resolvers:
             resolved = Facter.__resolve(enumvar)
             if resolved is not None:
-                Facter.__facts[enumvar] = resolved
+                Facter._facts[enumvar] = resolved
             return resolved
         else:
             return None
