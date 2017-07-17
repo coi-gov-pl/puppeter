@@ -104,8 +104,8 @@ setup(
     # for example:
     # $ pip install -e .[dev,test]
     extras_require={
-        'dev': ['check-manifest'],
-        'test': ['pytest-cov', 'python-coveralls'],
+        'dev': ['setuptools>=18.5', 'check-manifest'],
+        'test': ['pytest', 'pytest-cov', 'python-coveralls'],
     },
 
     # If there are data files included in your packages that need to be

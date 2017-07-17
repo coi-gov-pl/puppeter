@@ -19,10 +19,12 @@ class OperatingSystem(Enum):
     Debian = 6
     Ubuntu = 7
     OpenSuse = 8
+    Fedora = 9
 
 
 class OperatingSystemRelease(str):
-    VERSION_RE = re.compile('^(\d+)(?:\.(\d+))*$')
+    # https://regex101.com/r/uJ8oTf/2
+    VERSION_RE = re.compile('^(\d+)(?:\.(\d+))?(?:\.(\d+))?(?:[._\-](.*))?$')
 
     def __init__(self, version):
         super(OperatingSystemRelease, self).__init__()
@@ -32,14 +34,24 @@ class OperatingSystemRelease(str):
         return self.__version
 
     def major(self):
-        return self.VERSION_RE\
-            .match(self)\
-            .group(1)
+        return self.__group(1)
 
     def minor(self):
-        return self.VERSION_RE\
-            .match(self)\
-            .group(2)
+        return self.__group(2)
+
+    def patch(self):
+        return self.__group(3)
+
+    def lesser(self):
+        return self.__group(4)
+
+    def __group(self, num):
+        try:
+            return self.VERSION_RE \
+                .match(self) \
+                .group(num)
+        except AttributeError:
+            return str(self)
 
 
 class OperatingSystemCodename(str):

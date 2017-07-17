@@ -11,6 +11,7 @@ def calculate_operatingsystem():
     if platform.system() == 'Linux':
         dist = distro.linux_distribution(full_distribution_name=False)[0]
         return {
+            'fedora': OperatingSystem.Fedora,
             'centos': OperatingSystem.CentOS,
             'oracle linux server': OperatingSystem.OracleLinux,
             'red hat enterprise linux server': OperatingSystem.RedHat,

@@ -5,7 +5,7 @@ from puppeter.persistence.gateway.installer.debian import DebianPC5xConfigurer
 from tests.domain.mock_facter import MockFacter
 
 
-def test_pc4x():
+def test_pc5x():
     # given
     installer = Collection5xInstaller()
     installer.read_raw_options({'mode': 'Server'})
