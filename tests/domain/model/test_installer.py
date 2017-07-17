@@ -50,6 +50,21 @@ def test_rubygems_installer_read_raw_options():
     assert mode is Mode.Server
 
 
+def test_rubygems_installer_read_raw_options_invalid():
+    # given
+    from puppeter.domain.model.installer import RubygemsInstaller, Mode
+    installer = RubygemsInstaller()
+    # when
+    installer.read_raw_options({
+        'mod': 'Server',
+        'version': '~> 3'
+    })
+    mode = installer.mode()
+
+    # then
+    assert mode is Mode.Agent
+
+
 def test_getting_impl_from_container():
     # given
     from puppeter.domain.model.installer import Installer, Mode
