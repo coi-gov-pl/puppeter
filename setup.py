@@ -93,22 +93,26 @@ setup(
     # your project is installed. For an analysis of "install_requires" vs pip's
     # requirements files see:
     # https://packaging.python.org/en/latest/requirements.html
-    install_requires=[],
+    install_requires=[
+        'six',
+        'ruamel.yaml<0.15',
+        'distro'
+    ],
 
     # List additional groups of dependencies here (e.g. development
     # dependencies). You can install these using the following syntax,
     # for example:
     # $ pip install -e .[dev,test]
     extras_require={
-        'dev': ['check-manifest'],
-        'test': ['coverage'],
+        'dev': ['setuptools>=18.5', 'check-manifest'],
+        'test': ['pytest', 'pytest-cov', 'python-coveralls'],
     },
 
     # If there are data files included in your packages that need to be
     # installed, specify them here.  If using Python 2.6 or less, then these
     # have to be included in MANIFEST.in as well.
     package_data={
-        # 'sample': ['package_data.dat'],
+        'puppeter': ['*.sh'],
     },
 
     # Although 'package_data' is the preferred approach, in some case you may

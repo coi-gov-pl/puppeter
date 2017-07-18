@@ -3,3 +3,4 @@ include LICENSE
 
 # Include the data files
 recursive-include puppeter *.py
+recursive-include puppeter *.sh
