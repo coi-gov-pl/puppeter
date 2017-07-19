@@ -1,9 +1,11 @@
-class InteractiveApp:
-    def __init__(self, parsed):
-        self.__parsed = parsed
+from puppeter.presentation.app import App
 
-    def run(self):
+
+class InteractiveApp(App):
+
+    def __init__(self, parsed):
+        App.__init__(self, parsed)
+
+    def _collect_answers(self):
         print('INTERACTIVE')
-        print(self.__parsed)
-        print(self.__parsed)
-        pass
+        print(self._parsed)
