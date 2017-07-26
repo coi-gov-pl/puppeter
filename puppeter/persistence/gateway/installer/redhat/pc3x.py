@@ -1,10 +1,12 @@
 from puppeter.container import Named
 from puppeter.domain.facter import Facter
+from puppeter.domain.model.ordered import Order
 from puppeter.domain.model.osfacts import OperatingSystemRelease, OperatingSystem
 from puppeter.persistence.gateway.installer.redhat.base import BaseRedHatConfigurer
 
 
 @Named('pc3x-redhat')
+@Order(100)
 class RedHatPC3xConfigurer(BaseRedHatConfigurer):
 
     def __init__(self, installer):

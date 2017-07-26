@@ -7,7 +7,7 @@ class Answers:
                  fqdn_configurator=None,
                  timesync_configurator=None,
                  csrattrs_configurator=None):
-        self.__installer = installer
+        self.__installer = installer  # type: Installer
         self.__fqdn_configurator = fqdn_configurator
         self.__timesync_configurator = timesync_configurator
         self.__csrattrs_configurator = csrattrs_configurator

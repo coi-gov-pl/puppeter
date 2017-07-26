@@ -1,10 +1,12 @@
 from puppeter.container import Named
 from puppeter.domain.facter import Facter
+from puppeter.domain.model.ordered import Order
 from puppeter.domain.model.osfacts import OperatingSystemCodename
 from puppeter.persistence.gateway.installer.debian.base import BaseDebianConfigurer
 
 
 @Named('pc3x-debian')
+@Order(100)
 class DebianPC3xConfigurer(BaseDebianConfigurer):
     def __init__(self, installer):
         BaseDebianConfigurer.__init__(self, installer)

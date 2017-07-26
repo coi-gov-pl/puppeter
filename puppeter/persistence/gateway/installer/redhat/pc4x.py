@@ -1,8 +1,10 @@
 from puppeter.container import Named
+from puppeter.domain.model.ordered import Order
 from puppeter.persistence.gateway.installer.redhat.after4x import AfterPuppet4xConfigurer
 
 
 @Named('pc4x-redhat')
+@Order(100)
 class RedHatPC4xConfigurer(AfterPuppet4xConfigurer):
 
     def __init__(self, installer):

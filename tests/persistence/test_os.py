@@ -1,8 +1,13 @@
+import os
 import re
 
+import errno
+
+import puppeter.settings
 from puppeter import container
 from puppeter.domain.facter import Facter
-from puppeter.domain.model.osfacts import OsFamily, OperatingSystem, OperatingSystemRelease, OperatingSystemCodename
+from puppeter.domain.model.osfacts import OsFamily, OperatingSystem, OperatingSystemRelease, OperatingSystemCodename, \
+    Docker
 from tests.domain.mock_facter import MockFacter
 
 
@@ -72,6 +77,9 @@ class TestOsFactsResolvingOnMocks:
 
 
 class TestOsFactsResolvingForReal:
+    @classmethod
+    def setup_class(cls):
+        container.initialize()
 
     # noinspection PyMethodMayBeStatic
     def teardown_method(self):
@@ -96,3 +104,24 @@ class TestOsFactsResolvingForReal:
         rel = Facter.get(OperatingSystemRelease)
 
         assert rel is not None
+
+    def test_docker(self, tmpdir):
+        old_chroot = puppeter.settings.chroot
+        try:
+            new_root = tmpdir.mkdir("docker-utest")
+            puppeter.settings.chroot = str(new_root) + '/'
+            p = new_root.mkdir('proc').mkdir('1').join('cgroup')
+            p.write('11:blkio:/docker/885762619\n'
+                    '10:pids:/docker/885762619'
+                    '9:freezer:/docker/885762619\n'
+                    '8:cpuset:/docker/885762619\n'
+                    '7:perf_event:/docker/885762619\n'
+                    '6:devices:/docker/885762619\n'
+                    '5:hugetlb:/docker/885762619\n')
+            docker = Facter.get(Docker)
+
+            assert type(docker) is Docker
+            assert docker is Docker.YES
+            assert bool(docker) is True
+        finally:
+            puppeter.settings.chroot = old_chroot

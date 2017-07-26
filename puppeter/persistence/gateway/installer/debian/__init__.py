@@ -5,12 +5,17 @@ from puppeter.domain.gateway.installer import InstallerGateway
 from puppeter.persistence.gateway.installer.debian.pc3x import DebianPC3xConfigurer
 from puppeter.persistence.gateway.installer.debian.pc4x import DebianPC4xConfigurer
 from puppeter.persistence.gateway.installer.debian.pc5x import DebianPC5xConfigurer
+from puppeter.persistence.gateway.installer.linux import LinuxInstallerGateway
 
 
 @Named('debian')
-class DebianInstallerGateway(InstallerGateway):
+class DebianInstallerGateway(LinuxInstallerGateway):
 
-    def _provide_configurer(self, installer):
+    def _provide_install_configurers(self, installer):
+        return tuple([self.__provide_install_configurer(installer)])
+
+    @staticmethod
+    def __provide_install_configurer(installer):
         name = installer.bean_name()
         if name == 'gem':
             return container.get_named(Configurer, 'gem', installer=installer)

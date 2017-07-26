@@ -61,3 +61,11 @@ class OperatingSystemCodename(str):
 
     def __str__(self):
         return self.__codename
+
+
+class Docker(Enum):
+    NO = 1
+    YES = 2
+
+    def __nonzero__(self):
+        return self is Docker.YES

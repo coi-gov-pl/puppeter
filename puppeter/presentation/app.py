@@ -35,10 +35,9 @@ class App(with_metaclass(ABCMeta, object)):
         # type: () -> Answers
         pass
 
-    @staticmethod
-    def __process(answers):
+    def __process(self, answers):
         # type: (Answers) -> None
-        processor = container.get(AnswersProcessor)  # type: AnswersProcessor
+        processor = container.get(AnswersProcessor, options=self._parsed)  # type: AnswersProcessor
         processor.process(answers)
 
     @staticmethod

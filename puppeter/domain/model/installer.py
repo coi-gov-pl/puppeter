@@ -45,6 +45,11 @@ class Installer(WithOptions):
         # type: () -> Mode
         return self.__mode
 
+    @abstractmethod
+    def is_after_4x(self):
+        # type: () -> bool
+        pass
+
 
 @Named('gem')
 class RubygemsInstaller(Installer):
@@ -71,7 +76,7 @@ class RubygemsInstaller(Installer):
         return self.__version
 
 
-class CollectionInstaller(Installer):
+class CollectionInstaller(with_metaclass(ABCMeta, Installer)):
     pass
 
 
@@ -166,6 +171,9 @@ class After4xCollectionInstaller(CollectionInstaller):
         CollectionInstaller.__init__(self)
         self.__mem = JavaMemory()  # type: JavaMemory
 
+    def is_after_4x(self):
+        return True
+
     def raw_options(self):
         options = super(CollectionInstaller, self).raw_options()
         if self.__mem.is_set():
@@ -186,7 +194,8 @@ class After4xCollectionInstaller(CollectionInstaller):
 
 @Named('pc3x')
 class Collection3xInstaller(CollectionInstaller):
-    pass
+    def is_after_4x(self):
+        return False
 
 
 @Named('pc4x')

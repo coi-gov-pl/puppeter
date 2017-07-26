@@ -7,5 +7,4 @@ class InteractiveApp(App):
         App.__init__(self, parsed)
 
     def _collect_answers(self):
-        print('INTERACTIVE')
-        print(self._parsed)
+        raise NotImplementedError('Not yet implemented!')

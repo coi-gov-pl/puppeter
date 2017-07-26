@@ -1,11 +1,15 @@
 import logging
 
+from logging import Logger
+from typing import Type
+
 # The version of the app
 __version__ = '0.1.0.dev0'
 __program__ = 'puppeter'
 
 
 def get_logger(cls):
+    # type: (Type) -> Logger
     name = __fullname(cls)
     return logging.getLogger(name)
 

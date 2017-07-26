@@ -1,6 +1,9 @@
 from os.path import dirname
+from typing import Type, TypeVar, Any, List, Sequence
 
 from puppeter import __program__
+
+T = TypeVar('T')
 
 
 def initialize():
@@ -33,24 +36,28 @@ def Named(bean_name):
 
 
 def bind(cls, impl_cls):
+    # type: (Type[T], Type[T]) -> None
     beans = __get_all_beans(cls)
     beans.append(__Bean(cls, impl_cls=impl_cls))
 
 
 def bind_to_instance(cls, impl):
+    # type: (Type[T], T) -> None
     beans = __get_all_beans(cls)
     beans.append(__Bean(cls, impl=impl))
 
 
 def get_all(cls, *args, **kwargs):
+    # type: (Type[T], str, Any, Any) -> Sequence[T]
     beans = __get_all_beans(cls)
     try:
-        return tuple(map(lambda bean: bean.impl(*args, **kwargs), beans))
+        return __instantinate_beans(beans, *args, **kwargs)
     except Exception:
         return tuple()
 
 
 def get(cls, *args, **kwargs):
+    # type: (Type[T], Any, Any) -> T
     beans = __get_all_beans(cls)
     if len(beans) == 1:
         return beans[0].impl(*args, **kwargs)
@@ -62,17 +69,33 @@ def get(cls, *args, **kwargs):
 
 
 def get_named(cls, bean_name, *args, **kwargs):
+    # type: (Type[T], str, Any, Any) -> T
     for bean in __get_all_beans(cls):
         if bean.name() == bean_name:
             return bean.impl(*args, **kwargs)
     raise ValueError('Bean named %s has not been found for class %s' % (bean_name, cls))
 
 
+def get_all_with_name_starting_with(cls, name_prefix, *args, **kwargs):
+    # type: (Type[T], str, Any, Any) -> Sequence[T]
+    beans = []
+    for bean in __get_all_beans(cls):
+        if bean.name().startswith(name_prefix):
+            beans.append(bean)
+    return __instantinate_beans(beans, *args, **kwargs)
+
 __ROOT_DIR = dirname(dirname(__file__))
 __beans = {}
 
 
+def __instantinate_beans(beans, *args, **kwargs):
+    # type: (Sequence[__Bean], Any, Any) -> Sequence[T]
+    impls = tuple(map(lambda bean: bean.impl(*args, **kwargs), beans))  # type: Sequence[T]
+    return impls
+
+
 def __get_all_beans(cls):
+    # type: (Type[T]) -> List[__Bean]
     try:
         return __beans[cls]
     except KeyError:
@@ -106,6 +129,7 @@ class __Bean:
             return self.__impl.__class__
 
     def name(self):
+        # type: () -> str | None
         try:
             return self.impl_cls().bean_name()
         except AttributeError:
