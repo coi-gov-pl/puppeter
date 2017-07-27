@@ -5,3 +5,6 @@ installer:
     heap:
       min: 256m
       max: 512m
+  jvm_args:
+    - '-XX:+UseConcMarkSweepGC'
+    - '-XX:+CMSParallelRemarkEnabled'

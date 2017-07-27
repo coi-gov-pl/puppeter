@@ -6,6 +6,6 @@ $cfgdir = $::osfamily ? {
 augeas { 'settings-of-puppetserver':
   context => "/files${cfgdir}/puppetserver",
   changes => [
-    'set JVM_ARGS "@{jvmargs}"'
+    "set JAVA_ARGS '\"@{jvmargs}\"'"
   ],
 }

@@ -23,7 +23,7 @@ class PuppetServerServiceStarterConfigurer(Configurer):
             servicename = 'puppetserver'
         else:
             servicename = 'puppetmaster'
-        enable = 'false' if Facter.get(Docker) else 'true'
+        enable = 'true' if Facter.get(Docker) is not Docker.YES else 'false'
         collector = self._collector()
         desc = 'Starting Puppet server service ({servicename})'.format(servicename=servicename)
         mapping = dict(servicename=servicename, enable=enable)

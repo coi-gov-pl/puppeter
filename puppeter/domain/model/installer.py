@@ -197,13 +197,13 @@ class JvmArgs(WithOptions, Sequence):
 
     def raw_options(self):
         d = {
-            'jvmargs': tuple(self.__args)
+            'jvm_args': tuple(self.__args)
         }
         return d
 
     def read_raw_options(self, options):
         try:
-            new_args = options['jvmargs']
+            new_args = options['jvm_args']
             self.__args.clear()
             self.__args.extend(new_args)
         except KeyError:

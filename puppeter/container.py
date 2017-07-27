@@ -12,7 +12,6 @@ def initialize():
 
 def Named(bean_name):
     def named_decorator(cls):
-        cls.__bean_name = bean_name
 
         class NamedBean(cls):
             def __init__(self, *args, **kwargs):
