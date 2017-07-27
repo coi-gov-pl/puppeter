@@ -1,6 +1,8 @@
 from abc import abstractmethod, ABCMeta
 
 import re
+from typing import Sequence, Dict, Any
+
 from six import with_metaclass
 
 from puppeter.container import Named
@@ -16,10 +18,12 @@ class WithOptions(with_metaclass(ABCMeta, object)):
 
     @abstractmethod
     def raw_options(self):
+        # type: () -> Dict[str, Any]
         pass
 
     @abstractmethod
     def read_raw_options(self, options):
+        # type: (Dict[str, Any]) -> None
         pass
 
 
@@ -129,6 +133,14 @@ class JavaMemorySpec:
 
 class JavaMemory(WithOptions):
 
+    def __init__(self, heap_maximum=None, heap_minimum=None, metaspace_maximum=None):
+        self.__heap_maximum = heap_maximum  # type: JavaMemorySpec
+        if heap_minimum is not None:
+            self.__heap_minimum = heap_minimum  # type: JavaMemorySpec
+        else:
+            self.__heap_minimum = heap_maximum  # type: JavaMemorySpec
+        self.__metaspace_maximum = metaspace_maximum # type: JavaMemorySpec
+
     def raw_options(self):
         d = {
             'heap': {}
@@ -147,14 +159,12 @@ class JavaMemory(WithOptions):
         try:
             self.__heap_minimum = JavaMemorySpec.of(options['heap']['min'])
         except KeyError:
+            if self.__heap_maximum is not None:
+                self.__heap_minimum = self.__heap_maximum
+        try:
+            self.__metaspace_maximum = JavaMemorySpec.of(options['metaspace']['max'])
+        except KeyError:
             pass
-
-    def __init__(self, heap_maximum=None, heap_minimum=None):
-        self.__heap_maximum = heap_maximum  # type: JavaMemorySpec
-        if heap_minimum is not None:
-            self.__heap_minimum = heap_minimum  # type: JavaMemorySpec
-        else:
-            self.__heap_minimum = heap_maximum  # type: JavaMemorySpec
 
     def heap_maximum(self):
         return self.__heap_maximum
@@ -162,14 +172,52 @@ class JavaMemory(WithOptions):
     def heap_minimum(self):
         return self.__heap_minimum
 
+    def metaspace_maximum(self):
+        return self.__metaspace_maximum
+
     def is_set(self):
-        return self.heap_maximum() is not None or self.heap_minimum() is not None
+        return self.heap_maximum() is not None \
+               or self.heap_minimum() is not None \
+               or self.metaspace_maximum() is not None
+
+
+class JvmArgs(WithOptions, Sequence):
+
+    def __init__(self,
+                 args=tuple()  # type: Sequence[str]
+                 ):
+        self.__args = []
+        self.__args.extend(args)
+
+    def __getitem__(self, i):
+        return self.__args[i]
+
+    def __len__(self):
+        return len(self.__args)
+
+    def raw_options(self):
+        d = {
+            'jvmargs': tuple(self.__args)
+        }
+        return d
+
+    def read_raw_options(self, options):
+        try:
+            new_args = options['jvmargs']
+            self.__args.clear()
+            self.__args.extend(new_args)
+        except KeyError:
+            pass
+
+    def are_set(self):
+        return len(self.__args) > 0
 
 
 class After4xCollectionInstaller(CollectionInstaller):
     def __init__(self):
         CollectionInstaller.__init__(self)
         self.__mem = JavaMemory()  # type: JavaMemory
+        self.__jvmargs = JvmArgs()  # type: JvmArgs
 
     def is_after_4x(self):
         return True
@@ -178,11 +226,14 @@ class After4xCollectionInstaller(CollectionInstaller):
         options = super(CollectionInstaller, self).raw_options()
         if self.__mem.is_set():
             options['puppetserver_jvm_memory'] = self.__mem.raw_options()
+        if self.__jvmargs.are_set():
+            options.update(self.__jvmargs.raw_options())
         return options
 
     def read_raw_options(self, options):
         super(CollectionInstaller, self).read_raw_options(options)
         if self.mode() == Mode.Server:
+            self.__jvmargs.read_raw_options(options)
             try:
                 self.__mem.read_raw_options(options['puppetserver_jvm_memory'])
             except KeyError:
@@ -190,6 +241,9 @@ class After4xCollectionInstaller(CollectionInstaller):
 
     def puppetserver_jvm_memory(self):
         return self.__mem
+
+    def puppetserver_jvm_args(self):
+        return self.__jvmargs
 
 
 @Named('pc3x')

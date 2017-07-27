@@ -1,3 +1,8 @@
+from typing import TypeVar, Type, Callable
+
+T = TypeVar('T')
+
+
 class Facter:
     """
     A nano version of Puppet's Facter
@@ -7,6 +12,7 @@ class Facter:
 
     @staticmethod
     def get(enumvar):
+        # type: (Type[T]) -> T | None
         if enumvar in Facter._facts:
             return Facter._facts[enumvar]
         elif enumvar in Facter.__resolvers:
@@ -19,12 +25,14 @@ class Facter:
 
     @staticmethod
     def set(enumvar, resolver):
+        # type: (Type[T], Callable[[], T]) -> None
         if enumvar not in Facter.__resolvers:
             Facter.__resolvers[enumvar] = []
         Facter.__resolvers[enumvar].append(resolver)
 
     @staticmethod
     def __resolve(enumvar):
+        # type: (Type[T]) -> T | None
         for resolver in Facter.__resolvers[enumvar]:
             resolved = resolver()
             if resolved is not None:

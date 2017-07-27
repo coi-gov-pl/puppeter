@@ -8,6 +8,13 @@ class OsFamily(Enum):
     RedHat = 2
     Debian = 3
     Suse = 4
+    Windows = 5
+    AIX = 6
+    Solaris = 7
+    MacOS = 8
+
+    def is_posix(self):
+        return self not in (OsFamily.Unknown, OsFamily.Windows)
 
 
 class OperatingSystem(Enum):

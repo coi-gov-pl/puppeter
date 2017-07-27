@@ -20,7 +20,7 @@ class RubyGemConfigurer(Configurer):
 class LinuxInstallerGateway(with_metaclass(ABCMeta, InstallerGateway)):
     def _puppet_services(self, installer):
         return tuple(container.get_all_with_name_starting_with(Configurer,
-                                                               'puppet.services',
+                                                               'puppet.service',
                                                                installer=installer))
 
     def _puppet_cert_issue(self, installer):

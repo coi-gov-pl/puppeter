@@ -84,6 +84,11 @@ def get_all_with_name_starting_with(cls, name_prefix, *args, **kwargs):
             beans.append(bean)
     return __instantinate_beans(beans, *args, **kwargs)
 
+
+def get_bean(cls):
+    # type: (Type[T]) -> __Bean
+    return __get_all_beans(cls)[0]
+
 __ROOT_DIR = dirname(dirname(__file__))
 __beans = {}
 
