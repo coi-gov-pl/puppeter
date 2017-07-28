@@ -1,6 +1,8 @@
 from argparse import Namespace
 from typing import Sequence, List
 
+from pip._vendor.packaging.markers import Op
+
 import puppeter
 from puppeter import container
 from puppeter.domain.facter import Facter
@@ -9,12 +11,13 @@ from puppeter.domain.gateway.installer import InstallerGateway
 from puppeter.domain.model import osfacts
 from puppeter.domain.model.answers import Answers
 from puppeter.domain.model.configurer import Configurer
+from puppeter.presentation.app import Options
 
 
 class AnswersProcessorImpl(AnswersProcessor):
 
     def __init__(self, options):
-        self.options = options  # type: Namespace
+        self.options = options  # type: Options
         self.__log = puppeter.get_logger(AnswersProcessorImpl)
 
     def process(self, answers):
@@ -22,7 +25,7 @@ class AnswersProcessorImpl(AnswersProcessor):
         configurers.extend(self.__perform_installation(answers))
         commands = self.__collect_commands(configurers)
         for line in commands:
-            if self.options.execute:
+            if self.options.execute():
                 self.__log.warning('EXECUTING: %s', line)
             else:
                 print(line)

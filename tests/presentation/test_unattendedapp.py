@@ -3,6 +3,7 @@ import re
 from puppeter import container
 from puppeter.domain.model.osfacts import OperatingSystemCodename,\
     OperatingSystem, OsFamily, OperatingSystemRelease
+from puppeter.presentation.app import Options
 from puppeter.presentation.unattendedapp import UnattendedApp
 from tests.domain.mock_facter import MockFacter
 
@@ -14,8 +15,8 @@ def test_unattendedapp_onlyinstaller_with_verbosity(tmpdir, capsys):
               '    type: pc4x\n'
               '    mode: Server\n')
     answers = open(str(tmp))
-    parsed = dotdict(dict(answers=answers, verbose=2, execute=False))
-    app = UnattendedApp(parsed)
+    options = Options(dotdict(dict(answers=answers, verbose=2, execute=False)))
+    app = UnattendedApp(options)
 
     # when
     app.run()

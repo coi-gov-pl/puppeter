@@ -1,14 +1,16 @@
 import puppeter
 from puppeter import container
+from puppeter.container import Named
 from puppeter.domain.gateway.answers import AnswersGateway
 from puppeter.domain.model.answers import Answers
 from puppeter.presentation.app import App
 
 
+@Named('unattended')
 class UnattendedApp(App):
 
-    def __init__(self, parsed):
-        App.__init__(self, parsed)
+    def __init__(self, options):
+        App.__init__(self, options)
         self.__log = puppeter.get_logger(UnattendedApp)
 
     def _collect_answers(self):

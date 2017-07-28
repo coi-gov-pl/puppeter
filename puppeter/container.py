@@ -28,13 +28,10 @@ class NamedBean(with_metaclass(ABCMeta)):
         pass
 
 
-NamedClass = Union[Type[T], Callable[[Any, Any], T], NamedBean]
-
-
 def Named(bean_name):
     def named_decorator(cls):
 
-        class __NamedBean(NamedBean, cls):
+        class NamedBeanImpl(NamedBean, cls):
             def __init__(self, *args, **kwargs):
                 self.wrapped = cls(*args, **kwargs)
 
@@ -51,93 +48,17 @@ def Named(bean_name):
 
             def __getattr__(self, name):
                 return getattr(self.wrapped, name)
-        return __NamedBean
+        return NamedBeanImpl
     return named_decorator
 
 
-def bind(cls, impl_cls):
-    # type: (Type[T], Type[T]) -> None
-    beans = __get_all_beans(cls)
-    beans.append(__Bean(cls, impl_cls=impl_cls))
-
-
-def bind_to_instance(cls, impl):
-    # type: (Type[T], T) -> None
-    beans = __get_all_beans(cls)
-    beans.append(__Bean(cls, impl=impl))
-
-
-def get_all(cls, *args, **kwargs):
-    # type: (Type[T], Any, Any) -> Sequence[T]
-    beans = __get_all_beans(cls)
-    try:
-        return __instantinate_beans(beans, *args, **kwargs)
-    except Exception:
-        return tuple()
-
-
-def get(cls, *args, **kwargs):
-    # type: (Type[T], Any, Any) -> T
-    beans = __get_all_beans(cls)
-    if len(beans) == 1:
-        return beans[0].impl(*args, **kwargs)
-    else:
-        impls = list(map(lambda bean: str(bean.impl_cls()), beans))
-        raise ValueError('Zero or more then one implementation found for class %s. '
-                         'Found those implementations: %s. '
-                         'Use @Named beans and get_named() function!' % (cls, impls))
-
-
-def get_named(cls, bean_name, *args, **kwargs):
-    # type: (Type[T], str, Any, Any) -> T
-    for bean in __get_all_beans(cls):
-        if bean.name() == bean_name:
-            return bean.impl(*args, **kwargs)
-    raise ValueError('Bean named %s has not been found for class %s' % (bean_name, cls))
-
-
-def get_all_with_name_starting_with(cls, name_prefix, *args, **kwargs):
-    # type: (Type[T], str, Any, Any) -> Sequence[T]
-    beans = []
-    for bean in __get_all_beans(cls):
-        name = bean.name()
-        if name is not None and name.startswith(name_prefix):
-            beans.append(bean)
-    return __instantinate_beans(beans, *args, **kwargs)
-
-
-def get_bean(cls):
-    # type: (Type[T]) -> __Bean[T]
-    return __get_all_beans(cls)[0]
-
-
-__ROOT_DIR = dirname(dirname(__file__))
-__beans = {}  # type: Dict[Type, MutableSequence[__Bean]]
-
-
-def __instantinate_beans(beans, *args, **kwargs):
-    # type: (Sequence[__Bean[T]], Any, Any) -> Sequence[T]
-    impls = tuple(map(lambda bean: bean.impl(*args, **kwargs), beans))  # type: Sequence[T]
-    return impls
-
-
-def __get_all_beans(cls):
-    # type: (Type[T]) -> MutableSequence[__Bean[T]]
-    try:
-        return __beans[cls]
-    except KeyError:
-        lst = []  # type: MutableSequence[__Bean[T]]
-        __beans[cls] = lst
-        return lst
-
-
-class __Bean(Generic[T]):
+class Bean(Generic[T]):
     def __init__(self, cls, impl=None, impl_cls=None):
         if impl is None and impl_cls is None:
             raise Exception('20170707:164636')
         self.__cls = cls  # type: Type[T]
         self.__impl = impl  # type: T
-        self.__impl_cls = impl_cls  # type: NamedClass[T]
+        self.__impl_cls = impl_cls  # type: Union[Type[T], Callable[[Any, Any], T], NamedBean]
 
     def __repr__(self):
         name = self.name()
@@ -147,7 +68,7 @@ class __Bean(Generic[T]):
             return 'Bean of %s' % repr(self.impl_cls())
 
     def impl_cls(self):
-        # type: () -> NamedClass[T]
+        # type: () -> Union[Type[T], Callable[[Any, Any], T], NamedBean]
         if self.__impl is None and self.__impl_cls is not None:
             return self.__impl_cls
         else:
@@ -169,11 +90,118 @@ class __Bean(Generic[T]):
         return self.__impl
 
 
+class Container:
+
+    def __init__(self):
+        self.__beans = {}  # type: Dict[Type, MutableSequence[Bean]]
+
+    def bind(self, cls, impl_cls):
+        # type: (Type[T], Type[T]) -> None
+        beans = self.__get_all_beans(cls)
+        beans.append(Bean(cls, impl_cls=impl_cls))
+
+    def bind_to_instance(self, cls, impl):
+        # type: (Type[T], T) -> None
+        beans = self.__get_all_beans(cls)
+        beans.append(Bean(cls, impl=impl))
+
+    def get_all(self, cls, *args, **kwargs):
+        # type: (Type[T], Any, Any) -> Sequence[T]
+        beans = self.__get_all_beans(cls)
+        try:
+            return self.__instantinate_beans(beans, *args, **kwargs)
+        except Exception:
+            return tuple()
+
+    def get(self, cls, *args, **kwargs):
+        # type: (Type[T], Any, Any) -> T
+        beans = self.__get_all_beans(cls)
+        if len(beans) == 1:
+            return beans[0].impl(*args, **kwargs)
+        else:
+            impls = list(map(lambda bean: str(bean.impl_cls()), beans))
+            raise ValueError('Zero or more then one implementation found for class %s. '
+                             'Found those implementations: %s. '
+                             'Use @Named beans and get_named() function!' % (cls, impls))
+
+    def get_named(self, cls, bean_name, *args, **kwargs):
+        # type: (Type[T], str, Any, Any) -> T
+        for bean in self.__get_all_beans(cls):
+            if bean.name() == bean_name:
+                return bean.impl(*args, **kwargs)
+        raise ValueError('Bean named %s has not been found for class %s' % (bean_name, cls))
+
+    def get_all_with_name_starting_with(self, cls, name_prefix, *args, **kwargs):
+        # type: (Type[T], str, Any, Any) -> Sequence[T]
+        beans = []
+        for bean in self.__get_all_beans(cls):
+            name = bean.name()
+            if name is not None and name.startswith(name_prefix):
+                beans.append(bean)
+        return self.__instantinate_beans(beans, *args, **kwargs)
+
+    def get_bean(self, cls):
+        # type: (Type[T]) -> Bean[T]
+        return self.__get_all_beans(cls)[0]
+
+    def __instantinate_beans(self, beans, *args, **kwargs):
+        # type: (Sequence[Bean[T]], Any, Any) -> Sequence[T]
+        impls = tuple(map(lambda bean: bean.impl(*args, **kwargs), beans))  # type: Sequence[T]
+        return impls
+
+    def __get_all_beans(self, cls):
+        # type: (Type[T]) -> MutableSequence[Bean[T]]
+        try:
+            return self.__beans[cls]
+        except KeyError:
+            lst = []  # type: MutableSequence[Bean[T]]
+            self.__beans[cls] = lst
+            return lst
+
+
+app_container = Container()
+
+
+def bind(cls, impl_cls):
+    # type: (Type[T], Type[T]) -> None
+    app_container.bind(cls, impl_cls)
+
+
+def bind_to_instance(cls, impl):
+    # type: (Type[T], T) -> None
+    app_container.bind_to_instance(cls, impl)
+
+
+def get_all(cls, *args, **kwargs):
+    # type: (Type[T], Any, Any) -> Sequence[T]
+    return app_container.get_all(cls, *args, **kwargs)
+
+
+def get(cls, *args, **kwargs):
+    # type: (Type[T], Any, Any) -> T
+    return app_container.get(cls, *args, **kwargs)
+
+
+def get_named(cls, bean_name, *args, **kwargs):
+    # type: (Type[T], str, Any, Any) -> T
+    return app_container.get_named(cls, bean_name, *args, **kwargs)
+
+
+def get_all_with_name_starting_with(cls, name_prefix, *args, **kwargs):
+    # type: (Type[T], str, Any, Any) -> Sequence[T]
+    return app_container.get_all_with_name_starting_with(cls, name_prefix, *args, **kwargs)
+
+
+def get_bean(cls):
+    return app_container.get_bean(cls)
+
+
 def __load_modules(module_name):
     import os
     from os.path import join, abspath, isdir, exists
+    rootdir = dirname(dirname(__file__))
 
-    search = join(abspath(__ROOT_DIR), module_name.replace('.', os.sep))
+    search = join(abspath(rootdir), module_name.replace('.', os.sep))
     lst = os.listdir(search)
     modules = []
     for d in lst:

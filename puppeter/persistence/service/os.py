@@ -1,9 +1,8 @@
+from __future__ import absolute_import
 import os
+import distro
 import platform
 from typing import Sequence, Callable
-
-import distro
-from os.path import isfile
 
 import puppeter.settings
 from puppeter.domain.facter import Facter
@@ -71,7 +70,7 @@ def __calculate_docker_bool():
 
 
 def __is_readable(file):
-    return isfile(file) and os.access(file, os.R_OK)
+    return os.path.isfile(file) and os.access(file, os.R_OK)
 
 
 def __any(seq, predicate):

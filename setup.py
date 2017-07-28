@@ -97,7 +97,8 @@ setup(
         'six',
         'ruamel.yaml<0.15',
         'distro',
-        'enum34'
+        'enum34',
+        'typing'
     ],
 
     # List additional groups of dependencies here (e.g. development

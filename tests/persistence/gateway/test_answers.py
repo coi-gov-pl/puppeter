@@ -5,7 +5,7 @@ from puppeter.domain.model.answers import Answers
 from puppeter.domain.model.installer import Collection4xInstaller, Mode
 from puppeter.persistence.gateway.answers import YamlAnswersGateway
 
-EXAMPLE_ANSWERS = open(join(dirname(__file__), 'example-answers.yaml'), mode='r').read()
+EXAMPLE_ANSWERS = open(join(dirname(__file__), 'example-answers-simple.yaml'), mode='r').read()
 
 
 def __load(yaml_content):

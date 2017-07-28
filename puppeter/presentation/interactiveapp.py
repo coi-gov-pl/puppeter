@@ -1,6 +1,8 @@
+from puppeter.container import Named
 from puppeter.presentation.app import App
 
 
+@Named('interactive')
 class InteractiveApp(App):
 
     def __init__(self, options):

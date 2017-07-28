@@ -55,6 +55,9 @@ class Installer(WithOptions):
 
 @Named('gem')
 class RubygemsInstaller(Installer):
+    def is_after_4x(self):
+        return True
+
     def __init__(self):
         Installer.__init__(self)
         self.__version = None
@@ -202,7 +205,7 @@ class JvmArgs(WithOptions, Sequence):
     def read_raw_options(self, options):
         try:
             new_args = options['jvm_args']
-            self.__args.clear()
+            del self.__args[:]
             self.__args.extend(new_args)
         except KeyError:
             pass

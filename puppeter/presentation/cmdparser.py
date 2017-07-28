@@ -1,9 +1,10 @@
 import argparse
 import sys
-from typing import IO, Any
 
 import puppeter
-from puppeter.presentation.appfactory import AppFactory
+from puppeter import container
+from puppeter.presentation import App
+from puppeter.presentation.app import Options
 
 
 class _VersionAction(argparse.Action):
@@ -39,33 +40,14 @@ class StdErrArgumentParser(argparse.ArgumentParser):
         self._print_message(self.format_help(), file)
 
 
-class Options:
-    def __init__(self, namespace):
-        self.__answers = namespace.answers  # type: IO[Any]
-        self.__verbose = namespace.verbose  # type: int
-        self.__execute = namespace.execute  # type: bool
-
-    def answers(self):
-        # type: () -> IO[Any]
-        return self.__answers
-
-    def verbose(self):
-        # type: () -> int
-        return self.__verbose
-
-    def execute(self):
-        # type: () -> bool
-        return self.__execute
-
-
 class CommandLineParser(object):
     """CommandLineParser for Puppeter"""
-    def __init__(self, argv, appfactory=AppFactory()):
+    def __init__(self, argv):
         super(CommandLineParser, self).__init__()
         self.__argv = argv[1:]
-        self.__appfactory = appfactory
 
     def parse(self):
+        # type: () -> App
         parser = StdErrArgumentParser(prog='puppeter', description='Puppeter - an automatic puppet installer',
                                       epilog='By default interactive setup is performed and chosen values can be saved'
                                       ' to answer file.')
@@ -80,8 +62,5 @@ class CommandLineParser(object):
 
         parsed = parser.parse_args(self.__argv)
         options = Options(parsed)
-        if options.answers() is None:
-            app = self.__appfactory.interactive(options)
-        else:
-            app = self.__appfactory.unattended(options)
-        return app
+        apptype = 'interactive' if options.answers() is None else 'unattended'
+        return container.get_named(App, apptype, options=options)

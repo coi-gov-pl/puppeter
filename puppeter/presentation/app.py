@@ -4,6 +4,7 @@ import sys
 from abc import abstractmethod, ABCMeta
 from logging import StreamHandler
 from logging.handlers import SysLogHandler
+from typing import IO, Any
 
 from six import with_metaclass
 
@@ -13,7 +14,25 @@ from puppeter.domain.facter import Facter
 from puppeter.domain.gateway.answers import AnswersProcessor
 from puppeter.domain.model.answers import Answers
 from puppeter.domain.model.osfacts import OsFamily
-from puppeter.presentation.cmdparser import Options
+
+
+class Options:
+    def __init__(self, namespace):
+        self.__answers = namespace.answers  # type: IO[Any]
+        self.__verbose = namespace.verbose  # type: int
+        self.__execute = namespace.execute  # type: bool
+
+    def answers(self):
+        # type: () -> IO[Any]
+        return self.__answers
+
+    def verbose(self):
+        # type: () -> int
+        return self.__verbose
+
+    def execute(self):
+        # type: () -> bool
+        return self.__execute
 
 
 class App(with_metaclass(ABCMeta, object)):
