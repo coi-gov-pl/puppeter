@@ -1,7 +1,7 @@
 from six import with_metaclass
 from abc import ABCMeta, abstractmethod
 
-from puppeter.domain.model.answers import Answers  # NOQA
+from puppeter.domain.model.answers import Answers
 
 
 class AnswersGateway(with_metaclass(ABCMeta, object)):

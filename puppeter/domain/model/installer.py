@@ -1,12 +1,10 @@
-from abc import abstractmethod, ABCMeta
-
 import re
+from six import with_metaclass
+from abc import abstractmethod, ABCMeta
+from enum import Enum
 from typing import Sequence, Dict, Any
 
-from six import with_metaclass
-
 from puppeter.container import Named
-from enum import Enum
 
 
 class Mode(Enum):
@@ -35,8 +33,8 @@ class Installer(WithOptions):
         # noinspection PyUnresolvedReferences
         installer_type = self.bean_name()
         return {
-          'mode': self.__mode.name,
-          'type': installer_type
+            'mode': self.__mode.name,
+            'type': installer_type
         }
 
     def read_raw_options(self, options):
@@ -65,7 +63,7 @@ class RubygemsInstaller(Installer):
         parent_options = Installer.raw_options(self)
         merged = parent_options.copy()
         merged.update({
-          'version': self.__version
+            'version': self.__version
         })
         return merged
 
@@ -139,7 +137,7 @@ class JavaMemory(WithOptions):
             self.__heap_minimum = heap_minimum  # type: JavaMemorySpec
         else:
             self.__heap_minimum = heap_maximum  # type: JavaMemorySpec
-        self.__metaspace_maximum = metaspace_maximum # type: JavaMemorySpec
+        self.__metaspace_maximum = metaspace_maximum  # type: JavaMemorySpec
 
     def raw_options(self):
         d = {
@@ -177,8 +175,8 @@ class JavaMemory(WithOptions):
 
     def is_set(self):
         return self.heap_maximum() is not None \
-               or self.heap_minimum() is not None \
-               or self.metaspace_maximum() is not None
+            or self.heap_minimum() is not None \
+            or self.metaspace_maximum() is not None
 
 
 class JvmArgs(WithOptions, Sequence):

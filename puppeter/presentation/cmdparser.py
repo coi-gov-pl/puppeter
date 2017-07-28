@@ -1,5 +1,7 @@
 import argparse
 import sys
+from typing import IO, Any
+
 import puppeter
 from puppeter.presentation.appfactory import AppFactory
 
@@ -37,6 +39,25 @@ class StdErrArgumentParser(argparse.ArgumentParser):
         self._print_message(self.format_help(), file)
 
 
+class Options:
+    def __init__(self, namespace):
+        self.__answers = namespace.answers  # type: IO[Any]
+        self.__verbose = namespace.verbose  # type: int
+        self.__execute = namespace.execute  # type: bool
+
+    def answers(self):
+        # type: () -> IO[Any]
+        return self.__answers
+
+    def verbose(self):
+        # type: () -> int
+        return self.__verbose
+
+    def execute(self):
+        # type: () -> bool
+        return self.__execute
+
+
 class CommandLineParser(object):
     """CommandLineParser for Puppeter"""
     def __init__(self, argv, appfactory=AppFactory()):
@@ -58,6 +79,9 @@ class CommandLineParser(object):
                             help='Executes setup commands instead of printing them')
 
         parsed = parser.parse_args(self.__argv)
-        factory = self.__appfactory.interactive if parsed.answers is None else self.__appfactory.unattended
-        app = factory(parsed)
+        options = Options(parsed)
+        if options.answers() is None:
+            app = self.__appfactory.interactive(options)
+        else:
+            app = self.__appfactory.unattended(options)
         return app

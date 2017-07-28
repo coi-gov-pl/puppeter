@@ -13,16 +13,17 @@ from puppeter.domain.facter import Facter
 from puppeter.domain.gateway.answers import AnswersProcessor
 from puppeter.domain.model.answers import Answers
 from puppeter.domain.model.osfacts import OsFamily
+from puppeter.presentation.cmdparser import Options
 
 
 class App(with_metaclass(ABCMeta, object)):
 
-    def __init__(self, parsed):
-        self._parsed = parsed
+    def __init__(self, options):
+        self._options = options  # type: Options
 
     def run(self):
         root = logging.getLogger()
-        level = self.__get_log_level(self._parsed.verbose)
+        level = self.__get_log_level(self._options.verbose())
         root.setLevel(level)
         handlers = (self.__syslog_handler(), self.__stderr_handler())
         for hndl in handlers:
@@ -37,7 +38,7 @@ class App(with_metaclass(ABCMeta, object)):
 
     def __process(self, answers):
         # type: (Answers) -> None
-        processor = container.get(AnswersProcessor, options=self._parsed)  # type: AnswersProcessor
+        processor = container.get(AnswersProcessor, options=self._options)  # type: AnswersProcessor
         processor.process(answers)
 
     @staticmethod

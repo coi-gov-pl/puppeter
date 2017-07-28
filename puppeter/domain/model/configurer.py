@@ -1,12 +1,8 @@
 from abc import ABCMeta, abstractmethod
-from collections import OrderedDict
 from enum import Enum
-from string import Template
-from typing import Sequence, Any, Dict, Type
+from typing import Sequence, Any, Dict
 
-import pkg_resources
-import re
-from six import with_metaclass, iteritems
+from six import with_metaclass
 
 from puppeter import container
 

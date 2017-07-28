@@ -2,7 +2,7 @@ from abc import ABCMeta, abstractmethod
 
 from six import with_metaclass
 
-from puppeter.domain.model import Installer  # NOQA
+from puppeter.domain.model import Installer
 from puppeter.domain.model.configurer import Configurer
 from puppeter.domain.model.installer import Mode
 

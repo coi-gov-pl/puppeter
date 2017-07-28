@@ -1,5 +1,9 @@
+from abc import ABCMeta, abstractmethod
+
+from six import with_metaclass
 from os.path import dirname
-from typing import Type, TypeVar, Any, List, Sequence
+from typing import Generic, TypeVar, cast, Any, Callable, Union, Type, \
+    Sequence, MutableSequence, Dict, Optional
 
 from puppeter import __program__
 
@@ -10,10 +14,27 @@ def initialize():
     __load_modules(__program__)
 
 
+class NamedBean(with_metaclass(ABCMeta)):
+    @staticmethod
+    @abstractmethod
+    def bean_name():
+        # type: () -> str
+        pass
+
+    @staticmethod
+    @abstractmethod
+    def original_cls():
+        # type: () -> Type
+        pass
+
+
+NamedClass = Union[Type[T], Callable[[Any, Any], T], NamedBean]
+
+
 def Named(bean_name):
     def named_decorator(cls):
 
-        class NamedBean(cls):
+        class __NamedBean(NamedBean, cls):
             def __init__(self, *args, **kwargs):
                 self.wrapped = cls(*args, **kwargs)
 
@@ -30,7 +51,7 @@ def Named(bean_name):
 
             def __getattr__(self, name):
                 return getattr(self.wrapped, name)
-        return NamedBean
+        return __NamedBean
     return named_decorator
 
 
@@ -47,7 +68,7 @@ def bind_to_instance(cls, impl):
 
 
 def get_all(cls, *args, **kwargs):
-    # type: (Type[T], str, Any, Any) -> Sequence[T]
+    # type: (Type[T], Any, Any) -> Sequence[T]
     beans = __get_all_beans(cls)
     try:
         return __instantinate_beans(beans, *args, **kwargs)
@@ -61,7 +82,7 @@ def get(cls, *args, **kwargs):
     if len(beans) == 1:
         return beans[0].impl(*args, **kwargs)
     else:
-        impls = list(map(lambda bean: bean.impl_cls_name(), beans))
+        impls = list(map(lambda bean: str(bean.impl_cls()), beans))
         raise ValueError('Zero or more then one implementation found for class %s. '
                          'Found those implementations: %s. '
                          'Use @Named beans and get_named() function!' % (cls, impls))
@@ -79,42 +100,44 @@ def get_all_with_name_starting_with(cls, name_prefix, *args, **kwargs):
     # type: (Type[T], str, Any, Any) -> Sequence[T]
     beans = []
     for bean in __get_all_beans(cls):
-        if bean.name().startswith(name_prefix):
+        name = bean.name()
+        if name is not None and name.startswith(name_prefix):
             beans.append(bean)
     return __instantinate_beans(beans, *args, **kwargs)
 
 
 def get_bean(cls):
-    # type: (Type[T]) -> __Bean
+    # type: (Type[T]) -> __Bean[T]
     return __get_all_beans(cls)[0]
 
+
 __ROOT_DIR = dirname(dirname(__file__))
-__beans = {}
+__beans = {}  # type: Dict[Type, MutableSequence[__Bean]]
 
 
 def __instantinate_beans(beans, *args, **kwargs):
-    # type: (Sequence[__Bean], Any, Any) -> Sequence[T]
+    # type: (Sequence[__Bean[T]], Any, Any) -> Sequence[T]
     impls = tuple(map(lambda bean: bean.impl(*args, **kwargs), beans))  # type: Sequence[T]
     return impls
 
 
 def __get_all_beans(cls):
-    # type: (Type[T]) -> List[__Bean]
+    # type: (Type[T]) -> MutableSequence[__Bean[T]]
     try:
         return __beans[cls]
     except KeyError:
-        lst = []
+        lst = []  # type: MutableSequence[__Bean[T]]
         __beans[cls] = lst
         return lst
 
 
-class __Bean:
+class __Bean(Generic[T]):
     def __init__(self, cls, impl=None, impl_cls=None):
         if impl is None and impl_cls is None:
             raise Exception('20170707:164636')
-        self.__cls = cls
-        self.__impl = impl
-        self.__impl_cls = impl_cls
+        self.__cls = cls  # type: Type[T]
+        self.__impl = impl  # type: T
+        self.__impl_cls = impl_cls  # type: NamedClass[T]
 
     def __repr__(self):
         name = self.name()
@@ -123,25 +146,26 @@ class __Bean:
         else:
             return 'Bean of %s' % repr(self.impl_cls())
 
-    def impl_cls_name(self):
-        return self.__impl_cls
-
     def impl_cls(self):
-        if self.__impl is None:
+        # type: () -> NamedClass[T]
+        if self.__impl is None and self.__impl_cls is not None:
             return self.__impl_cls
         else:
             return self.__impl.__class__
 
     def name(self):
-        # type: () -> str | None
+        # type: () -> Optional[str]
         try:
-            return self.impl_cls().bean_name()
+            impl_cls = cast(NamedBean, self.impl_cls())
+            return impl_cls.bean_name()
         except AttributeError:
             return None
 
     def impl(self, *args, **kwargs):
-        if self.__impl is None:
+        # type: (Any, Any) -> T
+        if self.__impl is None and self.__impl_cls is not None:
             self.__impl = self.__impl_cls(*args, **kwargs)
+        # noinspection PyTypeChecker
         return self.__impl
 
 

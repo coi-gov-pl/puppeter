@@ -1,4 +1,4 @@
-from puppeter.domain.model.installer import Installer  # NOQA
+from puppeter.domain.model.installer import Installer
 
 
 class Answers:

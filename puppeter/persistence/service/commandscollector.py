@@ -85,4 +85,3 @@ class CommandsCollectorImpl(CommandsCollector):
             shellscript = tpl.substitute(dict(tmpfilename=tmpfilename, pp=shellscript))
 
         return self.__strip_shebang(shellscript).split("\n")
-

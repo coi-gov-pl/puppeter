@@ -96,7 +96,8 @@ setup(
     install_requires=[
         'six',
         'ruamel.yaml<0.15',
-        'distro'
+        'distro',
+        'enum34'
     ],
 
     # List additional groups of dependencies here (e.g. development

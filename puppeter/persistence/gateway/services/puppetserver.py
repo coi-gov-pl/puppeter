@@ -39,9 +39,9 @@ class PuppetServerJvmArgsConfigurer(Configurer):
 
     def produce_commands(self):
         install = self.__installer
-        if not (isinstance(install, After4xCollectionInstaller)
-                and install.mode() == Mode.Server
-                and install.is_after_4x()):
+        if not (isinstance(install, After4xCollectionInstaller) and
+                install.mode() == Mode.Server and
+                install.is_after_4x()):
             # Only for Java written PuppetServer
             return []
         return self.__produce_commands(install)

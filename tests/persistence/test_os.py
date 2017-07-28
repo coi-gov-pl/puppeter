@@ -1,7 +1,4 @@
-import os
 import re
-
-import errno
 
 import puppeter.settings
 from puppeter import container

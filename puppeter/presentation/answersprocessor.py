@@ -1,6 +1,5 @@
+from argparse import Namespace
 from typing import Sequence, List
-
-import logging
 
 import puppeter
 from puppeter import container
@@ -15,7 +14,7 @@ from puppeter.domain.model.configurer import Configurer
 class AnswersProcessorImpl(AnswersProcessor):
 
     def __init__(self, options):
-        self.options = options  # type:
+        self.options = options  # type: Namespace
         self.__log = puppeter.get_logger(AnswersProcessorImpl)
 
     def process(self, answers):

@@ -1,13 +1,7 @@
-from typing import Sequence, List
-
 import puppeter
 from puppeter import container
-from puppeter.domain.facter import Facter
-from puppeter.domain.model import osfacts
-from puppeter.domain.model.answers import Answers  # NOQA
-from puppeter.domain.gateway.answers import AnswersGateway, AnswersProcessor
-from puppeter.domain.gateway.installer import InstallerGateway
-from puppeter.domain.model.configurer import Configurer
+from puppeter.domain.gateway.answers import AnswersGateway
+from puppeter.domain.model.answers import Answers
 from puppeter.presentation.app import App
 
 
@@ -18,9 +12,9 @@ class UnattendedApp(App):
         self.__log = puppeter.get_logger(UnattendedApp)
 
     def _collect_answers(self):
-        file = self._parsed.answers
+        file = self._options.answers()
         answers = self.__load_answers(container.get(AnswersGateway), file)
-        if self._parsed.execute:
+        if self._options.execute():
             self.__log.warning('Installation will be performed from answer file:'
                                ' %s. System will be altered!!!', file.name)
         else:
