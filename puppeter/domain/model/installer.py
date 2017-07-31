@@ -1,10 +1,12 @@
+import collections
 import re
-from six import with_metaclass
+from six import with_metaclass, iteritems
 from abc import abstractmethod, ABCMeta
 from enum import Enum
 from typing import Sequence, Dict, Any
 
 from puppeter.container import Named
+from puppeter.domain.model.gemrequirement import GemRequirement
 
 
 class Mode(Enum):
@@ -23,6 +25,18 @@ class WithOptions(with_metaclass(ABCMeta, object)):
     def read_raw_options(self, options):
         # type: (Dict[str, Any]) -> None
         pass
+
+    @staticmethod
+    def _update(orig_dict, new_dict):
+        for key, val in iteritems(new_dict):
+            if isinstance(val, collections.Mapping):
+                tmp = WithOptions._update(orig_dict=orig_dict.get(key, {}), new_dict=val)
+                orig_dict[key] = tmp
+            elif isinstance(val, list):
+                orig_dict[key] = (orig_dict.get(key, []) + val)
+            else:
+                orig_dict[key] = new_dict[key]
+        return orig_dict
 
 
 class Installer(WithOptions):
@@ -56,7 +70,7 @@ class Installer(WithOptions):
 @Named('gem')
 class RubygemsInstaller(Installer):
     def is_after_4x(self):
-        return True
+        return GemRequirement(self.version()).satified_by('4.0')
 
     def __init__(self):
         Installer.__init__(self)
@@ -131,6 +145,12 @@ class JavaMemorySpec:
     def __str__(self):
         return '%d%s' % (self.__num, self.__scale.to_s())
 
+    def __repr__(self):
+        return str(self)
+
+    def __eq__(self, other):
+        return str(self) == str(other)
+
 
 class JavaMemory(WithOptions):
 
@@ -143,27 +163,35 @@ class JavaMemory(WithOptions):
         self.__metaspace_maximum = metaspace_maximum  # type: JavaMemorySpec
 
     def raw_options(self):
-        d = {
-            'heap': {}
-        }
+        d = {}
         if self.heap_maximum() is not None:
-            d['heap']['max'] = str(self.heap_maximum())
+            self._update(d, {'heap': {'max': str(self.heap_maximum())}})
         if self.heap_minimum() is not None:
-            d['heap']['min'] = str(self.heap_minimum())
-        return d
+            self._update(d, {'heap': {'min': str(self.heap_minimum())}})
+        if self.metaspace_maximum() is not None:
+            self._update(d, {'metaspace': {'max': str(self.metaspace_maximum())}})
+        return {
+            'puppetserver': {
+                'jvm': {'memory': d}
+            }
+        } if (len(d) > 0) else {}
 
     def read_raw_options(self, options):
         try:
-            self.__heap_maximum = JavaMemorySpec.of(options['heap']['max'])
+            mem = options['puppetserver']['jvm']['memory']
+        except KeyError:
+            return
+        try:
+            self.__heap_maximum = JavaMemorySpec.of(mem['heap']['max'])
         except KeyError:
             pass
         try:
-            self.__heap_minimum = JavaMemorySpec.of(options['heap']['min'])
+            self.__heap_minimum = JavaMemorySpec.of(mem['heap']['min'])
         except KeyError:
             if self.__heap_maximum is not None:
                 self.__heap_minimum = self.__heap_maximum
         try:
-            self.__metaspace_maximum = JavaMemorySpec.of(options['metaspace']['max'])
+            self.__metaspace_maximum = JavaMemorySpec.of(mem['metaspace']['max'])
         except KeyError:
             pass
 
@@ -184,9 +212,7 @@ class JavaMemory(WithOptions):
 
 class JvmArgs(WithOptions, Sequence):
 
-    def __init__(self,
-                 args=tuple()  # type: Sequence[str]
-                 ):
+    def __init__(self, args=tuple()):
         self.__args = []
         self.__args.extend(args)
 
@@ -197,14 +223,15 @@ class JvmArgs(WithOptions, Sequence):
         return len(self.__args)
 
     def raw_options(self):
-        d = {
-            'jvm_args': tuple(self.__args)
+        return {
+            'puppetserver': {
+                'jvm': {'args': tuple(self.__args)}
+            }
         }
-        return d
 
     def read_raw_options(self, options):
         try:
-            new_args = options['jvm_args']
+            new_args = options['puppetserver']['jvm']['args']
             del self.__args[:]
             self.__args.extend(new_args)
         except KeyError:
@@ -226,9 +253,9 @@ class After4xCollectionInstaller(CollectionInstaller):
     def raw_options(self):
         options = super(CollectionInstaller, self).raw_options()
         if self.__mem.is_set():
-            options['puppetserver_jvm_memory'] = self.__mem.raw_options()
+            self._update(options, self.__mem.raw_options())
         if self.__jvmargs.are_set():
-            options.update(self.__jvmargs.raw_options())
+            self._update(options, self.__jvmargs.raw_options())
         return options
 
     def read_raw_options(self, options):
@@ -236,7 +263,7 @@ class After4xCollectionInstaller(CollectionInstaller):
         if self.mode() == Mode.Server:
             self.__jvmargs.read_raw_options(options)
             try:
-                self.__mem.read_raw_options(options['puppetserver_jvm_memory'])
+                self.__mem.read_raw_options(options)
             except KeyError:
                 pass
 

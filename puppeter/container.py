@@ -100,11 +100,6 @@ class Container:
         beans = self.__get_all_beans(cls)
         beans.append(Bean(cls, impl_cls=impl_cls))
 
-    def bind_to_instance(self, cls, impl):
-        # type: (Type[T], T) -> None
-        beans = self.__get_all_beans(cls)
-        beans.append(Bean(cls, impl=impl))
-
     def get_all(self, cls, *args, **kwargs):
         # type: (Type[T], Any, Any) -> Sequence[T]
         beans = self.__get_all_beans(cls)
@@ -165,11 +160,6 @@ app_container = Container()
 def bind(cls, impl_cls):
     # type: (Type[T], Type[T]) -> None
     app_container.bind(cls, impl_cls)
-
-
-def bind_to_instance(cls, impl):
-    # type: (Type[T], T) -> None
-    app_container.bind_to_instance(cls, impl)
 
 
 def get_all(cls, *args, **kwargs):

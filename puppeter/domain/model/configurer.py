@@ -13,14 +13,17 @@ class ScriptFormat(Enum):
 
 
 class CommandsCollector(with_metaclass(ABCMeta)):
+    @abstractmethod
     def collect_from_template(self, description, template, mapping, format=ScriptFormat.BASH):
         # type: (str, str, Dict[str, Any]) -> CommandsCollector
         pass
 
+    @abstractmethod
     def collect_from_file(self, description, path):
         # type: (str, str) -> CommandsCollector
         pass
 
+    @abstractmethod
     def lines(self):
         # type: () -> Sequence[str]
         pass

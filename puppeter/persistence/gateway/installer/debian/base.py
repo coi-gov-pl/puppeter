@@ -3,7 +3,7 @@ from abc import ABCMeta, abstractmethod
 from six import with_metaclass
 
 from puppeter.domain.model import Installer
-from puppeter.domain.model.configurer import Configurer
+from puppeter.domain.model.configurer import Configurer, CommandsCollector
 from puppeter.domain.model.installer import Mode
 
 
@@ -27,15 +27,15 @@ class BaseDebianConfigurer(with_metaclass(ABCMeta, Configurer)):
 
     @abstractmethod
     def _collect_repo(self, collector):
-        # type: (Configurer.CommandsCollector) -> None
+        # type: (CommandsCollector) -> None
         raise NotImplementedError()
 
     @abstractmethod
     def _collect_agent(self, collector):
-        # type: (Configurer.CommandsCollector) -> None
+        # type: (CommandsCollector) -> None
         raise NotImplementedError()
 
     @abstractmethod
     def _collect_server(self, collector):
-        # type: (Configurer.CommandsCollector) -> None
+        # type: (CommandsCollector) -> None
         raise NotImplementedError()
