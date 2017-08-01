@@ -1,3 +1,12 @@
 installer:
   mode: Server
   type: pc4x
+  puppetserver:
+    jvm:
+      memory:
+        heap:
+          min: 256m
+          max: 512m
+      args:
+        - '-XX:+UseConcMarkSweepGC'
+        - '-XX:+CMSParallelRemarkEnabled'

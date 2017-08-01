@@ -1,9 +1,12 @@
-class InteractiveApp:
-    def __init__(self, parsed):
-        self.__parsed = parsed
+from puppeter.container import Named
+from puppeter.presentation.app import App
 
-    def run(self):
-        print('INTERACTIVE')
-        print(self.__parsed)
-        print(self.__parsed)
-        pass
+
+@Named('interactive')
+class InteractiveApp(App):
+
+    def __init__(self, options):
+        App.__init__(self, options)
+
+    def _collect_answers(self):
+        raise NotImplementedError('Not yet implemented!')

@@ -1,10 +1,13 @@
-import platform
-
+from __future__ import absolute_import
+import os
 import distro
+import platform
+from typing import Sequence, Callable
 
+import puppeter.settings
 from puppeter.domain.facter import Facter
 from puppeter.domain.model.osfacts import OsFamily, OperatingSystem, \
-    OperatingSystemRelease, OperatingSystemCodename
+    OperatingSystemRelease, OperatingSystemCodename, Docker
 
 
 def calculate_operatingsystem():
@@ -47,3 +50,29 @@ def calculate_oscodename():
         codename = distro.linux_distribution(full_distribution_name=False)[2]
         return OperatingSystemCodename(codename.strip().split(' ')[0].lower())
     return None
+
+
+def calculate_docker():
+    return Docker.YES if __calculate_docker_bool() else Docker.NO
+
+
+def __calculate_docker_bool():
+    if platform.system() != 'Linux':
+        return False
+    path = '{chroot}proc/1/cgroup'.format(chroot=puppeter.settings.chroot)
+    if not __is_readable(path):
+        return False
+    try:
+        lines = open(path).read().splitlines()
+        return __any(lines, lambda l: '/docker' in l.split(':')[2])
+    except IOError:
+        return False
+
+
+def __is_readable(file):
+    return os.path.isfile(file) and os.access(file, os.R_OK)
+
+
+def __any(seq, predicate):
+    # type: (Sequence, Callable[[str], bool]) -> bool
+    return any((predicate(i) is True) for i in seq)

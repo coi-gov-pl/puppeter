@@ -8,6 +8,13 @@ class OsFamily(Enum):
     RedHat = 2
     Debian = 3
     Suse = 4
+    Windows = 5
+    AIX = 6
+    Solaris = 7
+    MacOS = 8
+
+    def is_posix(self):
+        return self not in (OsFamily.Unknown, OsFamily.Windows)
 
 
 class OperatingSystem(Enum):
@@ -61,3 +68,11 @@ class OperatingSystemCodename(str):
 
     def __str__(self):
         return self.__codename
+
+
+class Docker(Enum):
+    NO = 1
+    YES = 2
+
+    def __nonzero__(self):
+        return self is Docker.YES

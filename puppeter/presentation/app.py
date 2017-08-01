@@ -1,26 +1,64 @@
 import logging
 import os
 import sys
+from abc import abstractmethod, ABCMeta
 from logging import StreamHandler
 from logging.handlers import SysLogHandler
+from typing import IO, Any
+
+from six import with_metaclass
 
 import puppeter
+from puppeter import container
 from puppeter.domain.facter import Facter
+from puppeter.domain.gateway.answers import AnswersProcessor
+from puppeter.domain.model.answers import Answers
 from puppeter.domain.model.osfacts import OsFamily
 
 
-class App:
+class Options:
+    def __init__(self, namespace):
+        self.__answers = namespace.answers  # type: IO[Any]
+        self.__verbose = namespace.verbose  # type: int
+        self.__execute = namespace.execute  # type: bool
 
-    def __init__(self, parsed):
-        self._parsed = parsed
+    def answers(self):
+        # type: () -> IO[Any]
+        return self.__answers
+
+    def verbose(self):
+        # type: () -> int
+        return self.__verbose
+
+    def execute(self):
+        # type: () -> bool
+        return self.__execute
+
+
+class App(with_metaclass(ABCMeta, object)):
+
+    def __init__(self, options):
+        self._options = options  # type: Options
 
     def run(self):
         root = logging.getLogger()
-        level = self.__get_log_level(self._parsed.verbose)
+        level = self.__get_log_level(self._options.verbose())
         root.setLevel(level)
         handlers = (self.__syslog_handler(), self.__stderr_handler())
         for hndl in handlers:
             root.addHandler(hndl)
+        answers = self._collect_answers()
+        self.__process(answers)
+
+    @abstractmethod
+    def _collect_answers(self):
+        # type: () -> Answers
+        pass
+
+    def __process(self, answers):
+        # type: (Answers) -> None
+        processor = container.get(AnswersProcessor, options=self._options)  # type: AnswersProcessor
+        processor.process(answers)
 
     @staticmethod
     def __stderr_handler():
