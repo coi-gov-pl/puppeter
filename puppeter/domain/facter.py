@@ -1,4 +1,4 @@
-from typing import TypeVar, Type, Callable
+from typing import TypeVar, Type, Callable, Optional
 
 T = TypeVar('T')
 
@@ -12,7 +12,7 @@ class Facter:
 
     @staticmethod
     def get(enumvar):
-        # type: (Type[T]) -> T | None
+        # type: (Type[T]) -> Optional[T]
         if enumvar in Facter._facts:
             return Facter._facts[enumvar]
         elif enumvar in Facter.__resolvers:
@@ -32,7 +32,7 @@ class Facter:
 
     @staticmethod
     def __resolve(enumvar):
-        # type: (Type[T]) -> T | None
+        # type: (Type[T]) -> Optional[T]
         for resolver in Facter.__resolvers[enumvar]:
             resolved = resolver()
             if resolved is not None:

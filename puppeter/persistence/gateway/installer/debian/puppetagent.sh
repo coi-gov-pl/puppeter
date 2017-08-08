@@ -2,6 +2,7 @@
 set +e
 if ! dpkg -l 'puppet-agent' | grep -q ii; then
     set -e
-    sudo apt-get install -y puppet-agent
-    exec env bash -l
+    apt-get install -y puppet-agent
+    su - $(whoami)
+    set -ex
 fi

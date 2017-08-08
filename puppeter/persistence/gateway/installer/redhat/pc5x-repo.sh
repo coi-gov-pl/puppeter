@@ -2,5 +2,5 @@
 set +e
 if ! rpm -q puppet5-release; then
     set -e
-    sudo rpm -Uvh 'https://yum.puppetlabs.com/puppet5-release-@{abbr}-@{major}.noarch.rpm'
+    rpm -Uvh 'https://yum.puppetlabs.com/puppet5-release-@{abbr}-@{major}.noarch.rpm'
 fi

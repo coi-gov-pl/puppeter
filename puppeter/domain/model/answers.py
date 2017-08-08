@@ -1,26 +1,30 @@
+from typing import Optional
+
+from puppeter.domain.model.fqdn import FqdnConfiguration
 from puppeter.domain.model.installer import Installer
 
 
 class Answers:
     def __init__(self,
                  installer=None,
-                 fqdn_configurator=None,
-                 timesync_configurator=None,
-                 csrattrs_configurator=None):
-        self.__installer = installer  # type: Installer
-        self.__fqdn_configurator = fqdn_configurator
-        self.__timesync_configurator = timesync_configurator
-        self.__csrattrs_configurator = csrattrs_configurator
+                 fqdn_configuration=None,
+                 timesync_configuration=None,
+                 csrattrs_configuration=None):
+        self.__installer = installer  # type: Optional[Installer]
+        self.__fqdn_configuration = fqdn_configuration  # type: Optional[FqdnConfiguration]
+        self.__timesync_configuration = timesync_configuration
+        self.__csrattrs_configuration = csrattrs_configuration
 
     def installer(self):
-        # type: () -> Installer
+        # type: () -> Optional[Installer]
         return self.__installer
 
-    def fqdn_configurator(self):
-        return self.__fqdn_configurator
+    def fqdn_configuration(self):
+        # type: () -> Optional[FqdnConfiguration]
+        return self.__fqdn_configuration
 
-    def timesync_configurator(self):
-        return self.__timesync_configurator
+    def timesync_configuration(self):
+        return self.__timesync_configuration
 
-    def csrattrs_configurator(self):
-        return self.__csrattrs_configurator
+    def csrattrs_configuration(self):
+        return self.__csrattrs_configuration

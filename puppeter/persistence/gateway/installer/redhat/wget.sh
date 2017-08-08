@@ -2,5 +2,5 @@
 set +e
 if ! rpm -q wget; then
     set -e
-    sudo yum install -y wget
+    yum install -y wget
 fi
