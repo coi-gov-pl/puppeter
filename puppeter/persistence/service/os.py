@@ -17,6 +17,7 @@ def calculate_operatingsystem():
             'fedora': OperatingSystem.Fedora,
             'centos': OperatingSystem.CentOS,
             'oracle': OperatingSystem.OracleLinux,
+            'ol': OperatingSystem.OracleLinux,
             'rhel': OperatingSystem.RedHat,
             'scientific': OperatingSystem.Scientific,
             'debian': OperatingSystem.Debian,
