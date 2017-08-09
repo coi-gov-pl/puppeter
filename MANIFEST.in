@@ -1,0 +1,9 @@
+# Include the license file
+include LICENSE
+
+# Include the data files
+recursive-include puppeter *.py
+recursive-include puppeter *.pyi
+recursive-include puppeter *.sh
+recursive-include puppeter *.pp
+
