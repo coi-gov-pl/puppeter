@@ -18,7 +18,6 @@ for root, dirnames, filenames in os.walk('puppeter'):
     fil.extend(fnmatch.filter(filenames, '*.pyi'))
     for filename in fil:
         package_data.append(os.path.join(root, filename).replace('puppeter/', ''))
-print(package_data)
 
 
 def read(*parts):
