@@ -1,5 +1,3 @@
-import re
-from argparse import Namespace
 from typing import Sequence, List
 
 import puppeter

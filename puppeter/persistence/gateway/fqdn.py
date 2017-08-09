@@ -2,8 +2,6 @@ from abc import ABCMeta, abstractmethod
 
 from six import with_metaclass
 from typing import Sequence
-
-from puppeter import container
 from puppeter.domain.facter import Facter
 from puppeter.domain.gateway.fqdn import FqdnSetterGateway
 from puppeter.domain.model.configurer import Configurer, CommandsCollector, ScriptFormat

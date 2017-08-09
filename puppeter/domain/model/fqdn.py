@@ -1,4 +1,4 @@
-from typing import Union
+from typing import Optional
 
 from puppeter.domain.model.withoptions import WithOptions
 
@@ -22,7 +22,7 @@ class FqdnConfiguration(WithOptions):
         return self.fqdn().split('.')[0]
 
     def domain(self):
-        # type: () -> Union[str,None]
+        # type: () -> Optional[str]
         domain = '.'.join(self.fqdn().split('.')[1:])
         domain = None if domain == '' else domain
         return domain
