@@ -1,3 +1,4 @@
 installer:
   mode: Server
   type: pc4x
+fqdn: app6.acme.internal

@@ -18,7 +18,6 @@ class AtTemplate(Template):
 
 
 class CommandsCollectorImpl(CommandsCollector):
-    SHEBANG_REGEX = re.compile('^#!(.*)\n', re.MULTILINE)
     __collected = 0
 
     def __init__(self, configurer):
@@ -37,7 +36,7 @@ class CommandsCollectorImpl(CommandsCollector):
         return self
 
     def lines(self):
-        lines = ['#!/usr/bin/env bash -ex', '']
+        lines = []
         for (description, script) in iteritems(self.__parts):
             CommandsCollectorImpl.__collected += 1
             lines.append('# Part %d: %s' % (CommandsCollectorImpl.__collected, description))
@@ -68,10 +67,6 @@ class CommandsCollectorImpl(CommandsCollector):
             pass
         return cls.__module__
 
-    @staticmethod
-    def __strip_shebang(script):
-        return re.sub(CommandsCollectorImpl.SHEBANG_REGEX, "", script)
-
     def __get_linesof_script(self, script):
         format = script['format']  # type: ScriptFormat
         shellscript = script['script']  # type: str
@@ -85,4 +80,4 @@ class CommandsCollectorImpl(CommandsCollector):
             tpl = AtTemplate(tpl)
             shellscript = tpl.substitute(dict(tmpfilename=tmpfilename, pp=shellscript))
 
-        return self.__strip_shebang(shellscript).split("\n")
+        return shellscript.split("\n")

@@ -1,12 +1,29 @@
+fqdn: puppet.acme.internal
 installer:
   mode: Server
   type: pc4x
   puppetserver:
     jvm:
+      args:
+        - '-XX:+UseConcMarkSweepGC'
+        - '-XX:+CMSParallelRemarkEnabled'
       memory:
         heap:
           min: 256m
           max: 512m
-      args:
-        - '-XX:+UseConcMarkSweepGC'
-        - '-XX:+CMSParallelRemarkEnabled'
+timesync:
+  type: ntpd
+  servers:
+    - ts1.acme.internal
+    - ts2.acme.internal
+    - ts3.acme.internal
+    - ts4.acme.internal
+csr-attributes:
+  pp_project: acme
+  pp_role: puppetserver
+  pp_zone: management
+  pp_environment: stage
+  pp_datacenter: dc1
+  pp_region: public
+
+

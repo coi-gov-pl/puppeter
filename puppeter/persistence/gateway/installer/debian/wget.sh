@@ -2,5 +2,5 @@
 set +e
 if ! dpkg -l 'wget' | grep -q ii; then
     set -e
-    sudo apt-get install -y wget
+    apt-get install -y wget
 fi

@@ -8,9 +8,10 @@ class InstallerGateway(with_metaclass(ABCMeta, object)):
 
     def configurers(self, installer):
         configurers = []
-        configurers.extend(self._provide_install_configurers(installer))
-        configurers.extend(self._puppet_cert_issue(installer))
-        configurers.extend(self._puppet_services(installer))
+        if installer is not None:
+            configurers.extend(self._provide_install_configurers(installer))
+            configurers.extend(self._puppet_cert_issue(installer))
+            configurers.extend(self._puppet_services(installer))
         return tuple(configurers)
 
     @abstractmethod

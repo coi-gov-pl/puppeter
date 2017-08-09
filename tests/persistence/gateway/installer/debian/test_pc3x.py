@@ -17,9 +17,9 @@ def test_pc3x():
 
     # then
     assert 'apt-get update -m' in commands
-    assert 'sudo apt-get install -y wget' in commands
+    assert 'apt-get install -y wget' in commands
     assert "wget 'https://apt.puppetlabs.com/puppetlabs-release-trusty.deb'" in commands
-    assert 'sudo apt-get install -y puppet' in commands
+    assert 'apt-get install -y puppet' in commands
     assert 'puppet resource package puppetmaster ensure=installed' in commands
 
 

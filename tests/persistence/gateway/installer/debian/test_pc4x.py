@@ -17,9 +17,9 @@ def test_pc4x():
 
     # then
     assert 'apt-get update -m' in commands
-    assert 'sudo apt-get install -y wget' in commands
+    assert 'apt-get install -y wget' in commands
     assert "wget 'https://apt.puppetlabs.com/puppetlabs-release-pc1-precise.deb'" in commands
-    assert 'sudo apt-get install -y puppet-agent' in commands
+    assert 'apt-get install -y puppet-agent' in commands
     assert 'puppet resource package puppetserver ensure=installed' in commands
 
 

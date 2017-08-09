@@ -2,6 +2,7 @@ from os.path import dirname, join
 import ruamel.yaml
 
 from puppeter.domain.model.answers import Answers
+from puppeter.domain.model.fqdn import FqdnConfiguration
 from puppeter.domain.model.installer import Collection4xInstaller, Mode
 from puppeter.persistence.gateway.answers import YamlAnswersGateway
 
@@ -19,7 +20,8 @@ def test_write(tmpdir):
         'mode': 'Server'
     })
     answers = Answers(
-        installer=installer
+        installer=installer,
+        fqdn_configuration=FqdnConfiguration('app6.acme.internal')
     )
     gateway = YamlAnswersGateway()
     target = tmpdir.join('answers.yaml')
@@ -45,3 +47,5 @@ def test_read(tmpdir):
     assert isinstance(answers, Answers)
     assert isinstance(answers.installer(), Collection4xInstaller)
     assert answers.installer().mode() == Mode.Server
+    assert answers.fqdn_configuration().hostname() == 'app6'
+    assert answers.fqdn_configuration().has_domain()

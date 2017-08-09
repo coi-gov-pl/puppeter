@@ -12,17 +12,19 @@ from puppeter.domain.model.osfacts import OsFamily, OperatingSystem, \
 
 def calculate_operatingsystem():
     if platform.system() == 'Linux':
-        dist = distro.linux_distribution(full_distribution_name=False)[0]
+        dist = distro.id()
         return {
             'fedora': OperatingSystem.Fedora,
             'centos': OperatingSystem.CentOS,
-            'oracle linux server': OperatingSystem.OracleLinux,
-            'red hat enterprise linux server': OperatingSystem.RedHat,
-            'scientific linux': OperatingSystem.Scientific,
+            'oracle': OperatingSystem.OracleLinux,
+            'rhel': OperatingSystem.RedHat,
+            'scientific': OperatingSystem.Scientific,
             'debian': OperatingSystem.Debian,
             'ubuntu': OperatingSystem.Ubuntu,
-            'opensuse': OperatingSystem.OpenSuse
-        }.get(dist.lower().strip(), OperatingSystem.Unknown)
+            'sles': OperatingSystem.SLES,
+            'opensuse': OperatingSystem.OpenSuse,
+            'arch': OperatingSystem.ArchLinux
+        }.get(dist, OperatingSystem.Unknown)
     return OperatingSystem.Unknown
 
 
@@ -34,7 +36,9 @@ def calculate_osfamily():
         OperatingSystem.Scientific: OsFamily.RedHat,
         OperatingSystem.Debian: OsFamily.Debian,
         OperatingSystem.Ubuntu: OsFamily.Debian,
-        OperatingSystem.OpenSuse: OsFamily.Suse
+        OperatingSystem.OpenSuse: OsFamily.Suse,
+        OperatingSystem.SLES: OsFamily.Suse,
+        OperatingSystem.ArchLinux: OsFamily.Arch
     }.get(Facter.get(OperatingSystem), OsFamily.Unknown)
 
 

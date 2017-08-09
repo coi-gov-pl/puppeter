@@ -18,9 +18,9 @@ def test_pc5x():
     commands = list(map(lambda cmd: cmd.strip(), commands))
 
     # then
-    assert 'sudo yum install -y wget' not in commands
-    assert "sudo rpm -Uvh 'https://yum.puppetlabs.com/puppet5-release-el-7.noarch.rpm'" in commands
-    assert 'sudo yum install -y puppet-agent' in commands
+    assert 'yum install -y wget' not in commands
+    assert "rpm -Uvh 'https://yum.puppetlabs.com/puppet5-release-el-7.noarch.rpm'" in commands
+    assert 'yum install -y puppet-agent' in commands
     assert 'puppet resource package puppetserver ensure=installed' in commands
 
 
