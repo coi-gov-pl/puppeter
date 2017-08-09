@@ -12,6 +12,7 @@ class OsFamily(Enum):
     AIX = 6
     Solaris = 7
     MacOS = 8
+    Arch = 9
 
     def is_posix(self):
         return self not in (OsFamily.Unknown, OsFamily.Windows)
@@ -27,6 +28,8 @@ class OperatingSystem(Enum):
     Ubuntu = 7
     OpenSuse = 8
     Fedora = 9
+    SLES = 10
+    ArchLinux = 11
 
 
 class OperatingSystemRelease(str):
