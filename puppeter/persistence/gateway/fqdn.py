@@ -9,7 +9,7 @@ from puppeter.domain.gateway.fqdn import FqdnSetterGateway
 from puppeter.domain.model.configurer import Configurer, CommandsCollector, ScriptFormat
 from puppeter.domain.model.fqdn import FqdnConfiguration
 from puppeter.domain.model.ordered import Order
-from puppeter.domain.model.osfacts import OsFamily
+from puppeter.domain.model.osfacts import OsFamily, Docker
 
 FQDN_ORDER = 200
 
@@ -63,6 +63,8 @@ class DebianFQDNConfigurer(LinuxFQDNConfigurer):
 class FqdnSetterGatewayImpl(FqdnSetterGateway):
     def process_fully_qualified_domain_name(self, fqdn):
         # type: (FqdnConfiguration) -> Sequence[Configurer]
+        if Facter.get(Docker) == Docker.YES:
+            raise NotImplementedError('Can\'t set FQDN when running inside Docker!')
         osfamily = Facter.get(OsFamily)
         try:
             return {

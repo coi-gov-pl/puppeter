@@ -2,14 +2,13 @@ import re
 from argparse import Namespace
 from typing import Sequence, List
 
-from pip._vendor.packaging.markers import Op
-
 import puppeter
 from puppeter import container
 from puppeter.domain.facter import Facter
 from puppeter.domain.gateway.answers import AnswersProcessor
 from puppeter.domain.gateway.fqdn import FqdnSetterGateway
 from puppeter.domain.gateway.installer import InstallerGateway
+from puppeter.domain.gateway.script import ScriptPostProcessor, ScriptLibrariesConfigurer
 from puppeter.domain.model import osfacts
 from puppeter.domain.model.answers import Answers
 from puppeter.domain.model.configurer import Configurer
@@ -18,14 +17,13 @@ from puppeter.presentation.app import Options
 
 class AnswersProcessorImpl(AnswersProcessor):
 
-    SHEBANG_REGEX = re.compile('^#!(.*)\n', re.MULTILINE)
-
     def __init__(self, options):
         self.options = options  # type: Options
         self.__log = puppeter.get_logger(AnswersProcessorImpl)
 
     def process(self, answers):
         configurers = []
+        configurers.extend(self.__attach_libs())
         configurers.extend(self.__perform_installation(answers))
         configurers.extend(self.__setup_fqdn(answers))
         commands = self.__collect_commands(configurers)
@@ -79,11 +77,12 @@ class AnswersProcessorImpl(AnswersProcessor):
     @classmethod
     def __postprocess(cls, commands):
         # type: (Sequence[str]) -> Sequence[str]
-        ln = "\n"
-        header = ['#!/usr/bin/env bash', 'set -ex', '']
-        stripped = cls.__strip_shebang(ln.join(commands)).split(ln)
-        return header + stripped
+        postprocessor = container.get(ScriptPostProcessor)
+        return postprocessor.postprocess(commands)
 
     @staticmethod
-    def __strip_shebang(script):
-        return re.sub(AnswersProcessorImpl.SHEBANG_REGEX, '', script)
+    def __attach_libs():
+        # type: () -> Sequence[Configurer]
+        return [
+            container.get(ScriptLibrariesConfigurer)
+        ]
