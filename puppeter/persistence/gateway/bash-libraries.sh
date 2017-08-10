@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set +x
 function reload_shell {
-    set +e
+    set +ex
     local files='~/.bash_profile ~/.bash_login ~/.profile'
     if [ -f /etc/profile ]; then
         . /etc/profile
@@ -12,6 +12,6 @@ function reload_shell {
             break
         fi
     done
-    set -e
+    set -ex
 }
 set -x
