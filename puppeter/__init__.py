@@ -4,7 +4,7 @@ from logging import Logger
 from typing import Type
 
 # The version of the app
-__version__ = '0.5.3'
+__version__ = '0.5.4.dev0'
 __program__ = 'puppeter'
 
 
