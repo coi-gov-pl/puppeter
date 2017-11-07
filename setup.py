@@ -107,7 +107,6 @@ setup(
         'ruamel.yaml<0.15',
         'distro',
         'enum34',
-        'dotmap',
         'typing'
     ],
 

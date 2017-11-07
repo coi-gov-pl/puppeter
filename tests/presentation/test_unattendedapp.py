@@ -1,7 +1,5 @@
 import re
 
-from dotmap import DotMap
-
 from puppeter import container
 from puppeter.domain.model.osfacts import OperatingSystemCodename,\
     OperatingSystem, OsFamily, OperatingSystemRelease
@@ -17,7 +15,7 @@ def test_unattendedapp_onlyinstaller_with_verbosity(tmpdir, capsys):
               '    type: pc4x\n'
               '    mode: Server\n')
     answers = open(str(tmp))
-    options = Options(DotMap(dict(answers=answers, verbose=2, execute=False)))
+    options = Options(DotDict(answers=answers, verbose=2, execute=False))
     app = UnattendedApp(options)
 
     # when
@@ -28,6 +26,11 @@ def test_unattendedapp_onlyinstaller_with_verbosity(tmpdir, capsys):
     assert "wget 'https://apt.puppetlabs.com/puppetlabs-release-pc1-trusty.deb'" in out
     assert 'DEBUG: Answers loaded from file' in err
     assert 'INFO: Installation commands will be generated based on answers file' in err
+
+
+class DotDict(dict):
+    def __getattr__(self, name):
+        return self[name]
 
 
 def restr(st):

@@ -217,5 +217,5 @@ def test_pc4x_puppetconf_read():
 
     # then
     assert raw['puppet.conf']['main']['server'] == 'puppet.acme.internal'
-    assert installer.puppetconf().main.server == 'puppet.acme.internal'
-    assert installer.puppetconf().main.noop is True
+    assert installer.puppetconf()['main']['server'] == 'puppet.acme.internal'
+    assert installer.puppetconf()['main']['noop'] is True

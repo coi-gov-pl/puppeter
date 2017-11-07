@@ -1,7 +1,6 @@
 import re
 from abc import abstractmethod, ABCMeta
 
-from dotmap import DotMap
 from enum import Enum
 from six import with_metaclass
 from typing import Sequence
@@ -223,7 +222,7 @@ class JvmArgs(WithOptions, Sequence):
         return len(self.__args) > 0
 
 
-class PuppetConf(WithOptions, DotMap):
+class PuppetConf(WithOptions, dict):
     def __init__(self, options=None):
         if options is None:
             options = {}
@@ -231,7 +230,7 @@ class PuppetConf(WithOptions, DotMap):
 
     def read_raw_options(self, options):
         try:
-            opts = DotMap(options['puppet.conf'])
+            opts = options['puppet.conf']
             self.clear()
             self.update(opts)
         except KeyError:
@@ -239,7 +238,7 @@ class PuppetConf(WithOptions, DotMap):
 
     def raw_options(self):
         if len(self) > 0:
-            return {'puppet.conf': self.toDict()}
+            return {'puppet.conf': self}
         else:
             return {}
 
