@@ -195,3 +195,27 @@ def test_pc3x_is_after4x():
 
     # then
     assert installer.is_after_4x() is False
+
+
+def test_pc4x_puppetconf_read():
+    # given
+    from puppeter.domain.model.installer import Installer
+    from puppeter import container
+    installer = container.get_named(Installer, 'pc4x')  # type: After4xCollectionInstaller
+
+    # when
+    installer.read_raw_options({
+        'mode': 'Agent',
+        'puppet.conf': {
+            'main': {
+                'server': 'puppet.acme.internal',
+                'noop': True
+            }
+        }
+    })
+    raw = installer.raw_options()
+
+    # then
+    assert raw['puppet.conf']['main']['server'] == 'puppet.acme.internal'
+    assert installer.puppetconf().main.server == 'puppet.acme.internal'
+    assert installer.puppetconf().main.noop is True

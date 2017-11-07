@@ -27,3 +27,8 @@ class LinuxInstallerGateway(with_metaclass(ABCMeta, InstallerGateway)):
         return tuple(container.get_all_with_name_starting_with(Configurer,
                                                                'puppet.cert.issue',
                                                                installer=installer))
+
+    def _puppet_conf(self, installer):
+        return tuple(container.get_all_with_name_starting_with(Configurer,
+                                                               'puppet.conf',
+                                                               installer=installer))

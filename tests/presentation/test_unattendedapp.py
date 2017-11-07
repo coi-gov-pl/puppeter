@@ -1,5 +1,7 @@
 import re
 
+from dotmap import DotMap
+
 from puppeter import container
 from puppeter.domain.model.osfacts import OperatingSystemCodename,\
     OperatingSystem, OsFamily, OperatingSystemRelease
@@ -15,7 +17,7 @@ def test_unattendedapp_onlyinstaller_with_verbosity(tmpdir, capsys):
               '    type: pc4x\n'
               '    mode: Server\n')
     answers = open(str(tmp))
-    options = Options(dotdict(dict(answers=answers, verbose=2, execute=False)))
+    options = Options(DotMap(dict(answers=answers, verbose=2, execute=False)))
     app = UnattendedApp(options)
 
     # when
@@ -28,13 +30,8 @@ def test_unattendedapp_onlyinstaller_with_verbosity(tmpdir, capsys):
     assert 'INFO: Installation commands will be generated based on answers file' in err
 
 
-class dotdict(dict):
-    def __getattr__(self, name):
-        return self[name]
-
-
-def restr(str):
-    return re.compile('\s*%s' % re.escape(str), re.MULTILINE)
+def restr(st):
+    return re.compile('\s*%s' % re.escape(st), re.MULTILINE)
 
 
 def setup_function():

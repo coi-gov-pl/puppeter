@@ -11,6 +11,7 @@ class InstallerGateway(with_metaclass(ABCMeta, object)):
         if installer is not None:
             configurers.extend(self._provide_install_configurers(installer))
             configurers.extend(self._puppet_cert_issue(installer))
+            configurers.extend(self._puppet_conf(installer))
             configurers.extend(self._puppet_services(installer))
         return tuple(configurers)
 
@@ -24,4 +25,8 @@ class InstallerGateway(with_metaclass(ABCMeta, object)):
 
     @abstractmethod
     def _puppet_services(self, installer):
+        pass
+
+    @abstractmethod
+    def _puppet_conf(self, installer):
         pass

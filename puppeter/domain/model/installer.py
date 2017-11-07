@@ -1,6 +1,7 @@
 import re
 from abc import abstractmethod, ABCMeta
 
+from dotmap import DotMap
 from enum import Enum
 from six import with_metaclass
 from typing import Sequence
@@ -8,6 +9,7 @@ from typing import Sequence
 from puppeter.container import Named
 from puppeter.domain.model.gemrequirement import GemRequirement
 from puppeter.domain.model.withoptions import WithOptions
+from puppeter.util.dict import merge
 
 
 class Mode(Enum):
@@ -18,18 +20,20 @@ class Mode(Enum):
 class Installer(WithOptions):
     def __init__(self):
         self.__mode = Mode.Agent  # type: Mode
+        self.__puppetconf = PuppetConf()  # type: PuppetConf
 
     def raw_options(self):
         # noinspection PyUnresolvedReferences
         installer_type = self.bean_name()
-        return {
+        return merge({
             'mode': self.__mode.name,
             'type': installer_type
-        }
+        }, self.__puppetconf.raw_options())
 
     def read_raw_options(self, options):
         try:
             self.__mode = Mode[options['mode']]
+            self.__puppetconf.read_raw_options(options)
         except KeyError:
             pass
 
@@ -41,6 +45,10 @@ class Installer(WithOptions):
     def is_after_4x(self):
         # type: () -> bool
         pass
+
+    def puppetconf(self):
+        # type: () -> PuppetConf
+        return self.__puppetconf
 
 
 @Named('gem')
@@ -97,7 +105,6 @@ class MemScale(Enum):
 
 
 class JavaMemorySpec:
-
     def __init__(self, num, scale=MemScale.MEGA):
         self.__num = int(num)  # type: int
         self.__scale = scale  # type: MemScale
@@ -129,7 +136,6 @@ class JavaMemorySpec:
 
 
 class JavaMemory(WithOptions):
-
     def __init__(self, heap_maximum=None, heap_minimum=None, metaspace_maximum=None):
         self.__heap_maximum = heap_maximum  # type: JavaMemorySpec
         if heap_minimum is not None:
@@ -215,6 +221,27 @@ class JvmArgs(WithOptions, Sequence):
 
     def are_set(self):
         return len(self.__args) > 0
+
+
+class PuppetConf(WithOptions, DotMap):
+    def __init__(self, options=None):
+        if options is None:
+            options = {}
+        super(PuppetConf, self).__init__(options)
+
+    def read_raw_options(self, options):
+        try:
+            opts = DotMap(options['puppet.conf'])
+            self.clear()
+            self.update(opts)
+        except KeyError:
+            pass
+
+    def raw_options(self):
+        if len(self) > 0:
+            return {'puppet.conf': self.toDict()}
+        else:
+            return {}
 
 
 class After4xCollectionInstaller(CollectionInstaller):
