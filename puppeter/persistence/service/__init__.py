@@ -8,6 +8,7 @@ from puppeter.persistence.service.os import calculate_operatingsystem, \
 from puppeter.domain.facter import Facter
 from puppeter.domain.model.osfacts import OperatingSystem, OsFamily, \
     OperatingSystemRelease, OperatingSystemCodename, Docker
+from puppeter.persistence.service.puppetconf import PuppetConfConfigurer
 from puppeter.persistence.service.puppetserver import PuppetServerServiceStarterConfigurer, \
     PuppetServerJvmArgsConfigurer
 
@@ -22,3 +23,4 @@ Facter.set(JavaVersion, calculate_java_version)
 container.bind(CommandsCollector, CommandsCollectorImpl)
 container.bind(Configurer, PuppetServerServiceStarterConfigurer)
 container.bind(Configurer, PuppetServerJvmArgsConfigurer)
+container.bind(Configurer, PuppetConfConfigurer)
