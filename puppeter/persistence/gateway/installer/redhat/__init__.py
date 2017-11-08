@@ -15,7 +15,8 @@ class RedHatInstallerGateway(LinuxInstallerGateway):
         configurers = [self.__provide_install_configurer(installer)]
         return tuple(configurers)
 
-    def __provide_install_configurer(self, installer):
+    @staticmethod
+    def __provide_install_configurer(installer):
         name = installer.bean_name()
         if name == 'gem':
             return container.get_named(Configurer, 'gem', installer=installer)
