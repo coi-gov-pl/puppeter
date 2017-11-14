@@ -51,5 +51,5 @@ def test_csr_gateway():
     # then
     assert len(configurers) == 1
     op = getattr(configurers[0], "produce_commands", None)
-    assert op != None
+    assert op is not None
     assert callable(op)

@@ -54,8 +54,8 @@ def test_fqdn_on_debian():
 
     # then
     assert u"    puppet resource host 'appserver.acme.internal' " \
-        "ensure=present host_aliases='appserver' ip=127.0.0.1 " \
-         "comment='FQDN'" in commands
+           "ensure=present host_aliases='appserver' ip=127.0.0.1 " \
+           "comment='FQDN'" in commands
     assert "    hostname 'appserver'" in commands
     assert u"  content => 'appserver'" in commands
 
