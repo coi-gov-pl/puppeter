@@ -92,5 +92,8 @@ class AnswersProcessorImpl(AnswersProcessor):
         # type: (Answers) -> Sequence[Configurer]
         if answers.csrattrs_configuration() is not None:
             csrsetter = container.get(CsrAttributesSetterGateway)
-            return csrsetter.save_csr_attributes(answers.csrattrs_configuration())
+            return csrsetter.save_csr_attributes(
+                answers.csrattrs_configuration(),
+                answers.installer().mode()
+            )
         return []

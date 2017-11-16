@@ -1,10 +1,14 @@
 Puppeter - an automatic puppet installer
 ========================================
 
+**Work In Progress!**
+
 .. image:: https://travis-ci.org/coi-gov-pl/puppeter.svg?branch=develop
     :target: https://travis-ci.org/coi-gov-pl/puppeter
 .. image:: https://coveralls.io/repos/github/coi-gov-pl/puppeter/badge.svg?branch=feature%2Finstall-puppet-agent
     :target: https://coveralls.io/github/coi-gov-pl/puppeter?branch=feature%2Finstall-puppet-agent
+.. image:: https://img.shields.io/pypi/v/puppeter.svg
+    :target: https://pypi.python.org/pypi/puppeter
 
 
 A commandline tool to ease the installation of typical puppetserver - agent installation. It uses a interactive mode and batch mode as well. Batch mode utilizes a answer files for full automatic operation.
