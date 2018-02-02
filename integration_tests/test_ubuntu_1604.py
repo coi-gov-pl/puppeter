@@ -12,16 +12,16 @@ def sut():
 
 
 def test_simple_pc4x_on_ubuntu_1604(phial, capsys):
-    capsys.disabled()
-    phial.scp(puppeter_source, remote_dir)
-    status = __script(phial, 'install-develop.sh')
-    assert status == 0
+    with capsys.disabled():
+        phial.scp(puppeter_source, remote_dir)
+        status = __script(phial, 'install-develop.sh')
+        assert status == 0
 
-    answers = '%s/integration_tests/answers/simple-pc4x.yml' % remote_dir
-    status = __script(phial, 'execute.sh', answers)
-    assert status == 0
+        answers = '%s/integration_tests/answers/simple-pc4x.yml' % remote_dir
+        status = __script(phial, 'execute.sh', answers)
+        assert status == 0
 
-    assert phial.exec("bash -lc 'puppet --version | egrep \"^4\.\d+\.\d+$\"'") == 0
+        assert phial.exec("bash -lc 'puppet --version | egrep \"^4\.[0-9]+\.[0-9]+$\"'") == 0
 
 
 def __script(phial, script, arg=''):

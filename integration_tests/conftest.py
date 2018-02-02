@@ -53,17 +53,12 @@ class Phial:
             logger.info('Uploading local directory: %s to remote location: %s', localpath, remotepath)
             self.__put_dir(localpath, remotepath)
 
-    def __put_dir(self, source, target):
-        transport = self.__ssh.get_transport()
-        with DirSFTPClient.from_transport(transport) as sftp:
-            sftp.put_dir(source, target)
-            sftp.close()
-
-    def exec(self, command):
+    def exec(self, command, cature=False):
         logger.info("Executing command: %s", command)
         channel = self.__ssh.get_transport().open_session()  # type: Channel
         channel.get_pty()
         channel.exec_command(command)
+
         print("\n")
         while True:
             if channel.exit_status_ready():
@@ -73,6 +68,19 @@ class Phial:
             if len(rl) > 0:
                 print(channel.recv(16).decode(), end='')
         return channel.exit_status
+
+    def __put_dir(self, source, target):
+        transport = self.__ssh.get_transport()
+        with DirSFTPClient.from_transport(transport) as sftp:
+            sftp.put_dir(source, target)
+            sftp.close()
+
+    class OutputBuffer:
+        def __init__(self):
+            self.buf = ''
+
+        def recv(self, data):
+            self.buf += data
 
 
 @pytest.fixture(scope='session')
