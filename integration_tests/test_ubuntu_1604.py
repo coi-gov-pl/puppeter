@@ -1,31 +1,40 @@
 import pytest
-from os.path import dirname, join
+from os.path import join
 
-puppeter_source = dirname(dirname(__file__))
-remote_dir = '/usr/src/puppeter-source'
+from integration_tests.acceptance import PuppeterAcceptance
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture
 def sut():
     """System Under Test"""
     return join('debian', 'ubuntu', '1604')
 
 
+def test_simple_pc3x_on_ubuntu_1604(phial, capsys):
+    with capsys.disabled():
+        acceptance = PuppeterAcceptance(phial)
+
+        acceptance.install_puppeter()
+        acceptance.run_puppeter('simple-pc3x.yml')
+
+        assert phial.exec("bash -lc 'puppet --version | egrep \"^3\.[0-9]+\.[0-9]+$\"'") == 0
+
+
 def test_simple_pc4x_on_ubuntu_1604(phial, capsys):
     with capsys.disabled():
-        phial.scp(puppeter_source, remote_dir)
-        status = __script(phial, 'install-develop.sh')
-        assert status == 0
+        acceptance = PuppeterAcceptance(phial)
 
-        answers = '%s/integration_tests/answers/simple-pc4x.yml' % remote_dir
-        status = __script(phial, 'execute.sh', answers)
-        assert status == 0
+        acceptance.install_puppeter()
+        acceptance.run_puppeter('simple-pc4x.yml')
 
         assert phial.exec("bash -lc 'puppet --version | egrep \"^4\.[0-9]+\.[0-9]+$\"'") == 0
 
 
-def __script(phial, script, arg=''):
-    command = 'bash -xe %s/integration_tests/scripts/%s %s' % (remote_dir, script, arg)
-    return phial.exec(command.strip())
+def test_simple_pc5x_on_ubuntu_1604(phial, capsys):
+    with capsys.disabled():
+        acceptance = PuppeterAcceptance(phial)
 
+        acceptance.install_puppeter()
+        acceptance.run_puppeter('simple-pc5x.yml')
 
+        assert phial.exec("bash -lc 'puppet --version | egrep \"^5\.[0-9]+\.[0-9]+$\"'") == 0

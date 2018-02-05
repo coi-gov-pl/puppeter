@@ -116,7 +116,7 @@ setup(
     # $ pip install -e .[dev,test]
     extras_require={
         'dev': ['setuptools>=18.5', 'check-manifest'],
-        'test': ['pytest', 'pytest-cov', 'python-coveralls', 'pytest-docker', 'paramiko'],
+        'test': ['pytest', 'pytest-cov', 'python-coveralls', 'paramiko'],
     },
 
     # If there are data files included in your packages that need to be
