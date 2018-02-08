@@ -7,10 +7,10 @@ from integration_tests.acceptance import PuppeterAcceptance
 @pytest.fixture
 def sut():
     """System Under Test"""
-    return join('debian', 'ubuntu-1604')
+    return join('debian', 'ubuntu-1404')
 
 
-def test_simple_pc3x_on_ubuntu_1604(phial, capsys):
+def test_simple_pc3x_on_ubuntu_1404(phial, capsys):
     with capsys.disabled():
         acceptance = PuppeterAcceptance(phial)
 
@@ -20,7 +20,7 @@ def test_simple_pc3x_on_ubuntu_1604(phial, capsys):
         assert phial.exec("bash -lc 'puppet --version | egrep \"^3\.[0-9]+\.[0-9]+$\"'") == 0
 
 
-def test_simple_pc4x_on_ubuntu_1604(phial, capsys):
+def test_simple_pc4x_on_ubuntu_1404(phial, capsys):
     with capsys.disabled():
         acceptance = PuppeterAcceptance(phial)
 
@@ -30,7 +30,7 @@ def test_simple_pc4x_on_ubuntu_1604(phial, capsys):
         assert phial.exec("bash -lc 'puppet --version | egrep \"^4\.[0-9]+\.[0-9]+$\"'") == 0
 
 
-def test_simple_pc5x_on_ubuntu_1604(phial, capsys):
+def test_simple_pc5x_on_ubuntu_1404(phial, capsys):
     with capsys.disabled():
         acceptance = PuppeterAcceptance(phial)
 

@@ -1,5 +1,7 @@
 from __future__ import print_function
 
+import abc
+
 import attr
 import re
 import subprocess
@@ -10,8 +12,14 @@ import paramiko
 import pytest
 import os
 import select
+
+import sys
+
+import six
 from paramiko import SFTPClient, SSHClient, Channel
 from paramiko.common import o777
+from typing import Sequence
+from six import StringIO
 
 logger = logging.getLogger()
 
@@ -58,21 +66,29 @@ class Phial:
             logger.info('Uploading local directory: %s to remote location: %s', localpath, remotepath)
             self.__put_dir(localpath, remotepath)
 
-    def exec(self, command, cature=False):
+    def exec(self, command, capture=False):
+        # type: (str, bool) -> (int, str, str)
         logger.info("Executing command: %s", command)
         channel = self.__ssh.get_transport().open_session()  # type: Channel
         channel.get_pty()
         channel.exec_command(command)
-
-        print("\n")
+        if capture:
+            handler = Phial.CaptureOutputHandler()
+        else:
+            print("\n")
+            handler = Phial.PrintOutputHandler()
+        reader = self.OutputReader(channel, handler)
         while True:
             if channel.exit_status_ready():
-                print(channel.recv(16*4096).decode(), end='')
+                reader.read_all()
                 break
             rl, wl, xl = select.select([channel], [], [], 0.0)
             if len(rl) > 0:
-                print(channel.recv(16).decode(), end='')
-        return channel.exit_status
+                reader.read_chunk()
+        if capture:
+            return channel.exit_status, handler.collected_output(), handler.collected_error_output()
+        else:
+            return channel.exit_status, '', ''
 
     def __put_dir(self, source, target):
         transport = self.__ssh.get_transport()
@@ -80,12 +96,88 @@ class Phial:
             sftp.put_dir(source, target)
             sftp.close()
 
+    @six.add_metaclass(abc.ABCMeta)
+    class OutputHandler:
+        @abc.abstractmethod
+        def out(self, data):
+            # type: (str) -> None
+            pass
+
+        @abc.abstractmethod
+        def err(self, data):
+            # type: (str) -> None
+            pass
+
+    class CaptureOutputHandler(OutputHandler):
+        def __init__(self):
+            self.outbuf = StringIO()
+            self.errbuf = StringIO()
+
+        def out(self, data):
+            self.outbuf.write(data)
+
+        def err(self, data):
+            self.errbuf.write(data)
+
+        def collected_output(self):
+            return self.outbuf.read()
+
+        def collected_error_output(self):
+            return self.errbuf.read()
+
+    class PrintOutputHandler(OutputHandler):
+        OUT_COLORED = '\e[38;5;45m%s\e[0m'
+        ERR_COLORED = '\e[38;5;165m%s\e[0m'
+
+        def __init__(self):
+            self.outbuf = Phial.OutputBuffer()  # type: Phial.OutputBuffer
+            self.errbuf = Phial.OutputBuffer()  # type: Phial.OutputBuffer
+
+        def out(self, data):
+            self.outbuf.recv(data)
+            lines = self.outbuf.lines_collected()
+            for line in lines:
+                self.print_out(line)
+
+        def err(self, data):
+            self.errbuf.recv(data)
+            lines = self.errbuf.lines_collected()
+            for line in lines:
+                self.print_err(line)
+
+        def print_out(self, line):
+            print(self.OUT_COLORED.format(line))
+
+        def print_err(self, line):
+            print(self.ERR_COLORED.format(line), file=sys.stderr)
+
+    class OutputReader:
+        def __init__(self, channel, handler):
+            self.__channel = channel  # type: Channel
+            self.__handler = handler  # type: Phial.OutputHandler
+
+        def read_all(self):
+            while self.__channel.recv_stderr_ready() or self.__channel.recv_ready():
+                self.read_chunk(1024)
+
+        def read_chunk(self, size=32):
+            if self.__channel.recv_stderr_ready():
+                data = self.__channel.recv_stderr(size).decode()
+                self.__handler.err(data)
+            if self.__channel.recv_ready():
+                data = self.__channel.recv(size).decode()
+                self.__handler.out(data)
+
     class OutputBuffer:
         def __init__(self):
-            self.buf = ''
+            self.buf = StringIO()  # type: StringIO
 
         def recv(self, data):
-            self.buf += data
+            self.buf.write(data)
+
+        def lines_collected(self):
+            # type: () -> Sequence[str]
+            return self.buf.readlines()
 
 
 @pytest.fixture
