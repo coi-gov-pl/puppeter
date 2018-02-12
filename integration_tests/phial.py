@@ -19,17 +19,16 @@ import six
 from paramiko import SFTPClient, SSHClient, Channel
 from paramiko.common import o777
 from typing import Sequence
-from six import StringIO
 
 logger = logging.getLogger()
 
 
 class DirSFTPClient(paramiko.SFTPClient):
     def put_dir(self, source, target, exclude=('.git', '.tox')):
-        ''' Uploads the contents of the source directory to the target path. The
+        """ Uploads the contents of the source directory to the target path. The
             target directory needs to exists. All subdirectories in source are
             created under target.
-        '''
+        """
         self.mkdir(target, ignore_existing=True)
         for item in os.listdir(source):
             itemfull = os.path.join(source, item)
@@ -42,7 +41,7 @@ class DirSFTPClient(paramiko.SFTPClient):
                 self.put_dir(itemfull, '%s/%s' % (target, item))
 
     def mkdir(self, path, mode=o777, ignore_existing=False):
-        ''' Augments mkdir by adding an option to not fail if the folder exists  '''
+        """ Augments mkdir by adding an option to not fail if the folder exists  """
         try:
             super(DirSFTPClient, self).mkdir(path, mode)
         except IOError:
@@ -126,8 +125,7 @@ class Phial:
             return self.errbuf
 
     class PrintOutputHandler(OutputHandler):
-        PHIAL_WRAP = colorama.Fore.WHITE + colorama.Style.DIM +\
-                     "phial >>> " + colorama.Style.RESET_ALL
+        PHIAL_WRAP = colorama.Fore.WHITE + colorama.Style.DIM + "phial >>> " + colorama.Style.RESET_ALL
 
         def __init__(self):
             colorama.init(strip=False)
@@ -299,7 +297,8 @@ class Services(object):
 
         return match
 
-    def wait_until_responsive(self, check, timeout, pause,
+    @staticmethod
+    def wait_until_responsive(check, timeout, pause,
                               clock=timeit.default_timer):
         """Wait until a service is responsive."""
 

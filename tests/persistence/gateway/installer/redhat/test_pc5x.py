@@ -19,7 +19,7 @@ def test_pc5x():
 
     # then
     assert 'yum install -y wget' not in commands
-    assert "rpm -Uvh 'https://yum.puppetlabs.com/puppet5-release-el-7.noarch.rpm'" in commands
+    assert "rpm -Uvh 'https://yum.puppetlabs.com/puppet5/puppet5-release-el-7.noarch.rpm'" in commands
     assert 'yum install -y puppet-agent' in commands
     assert 'puppet resource package puppetserver ensure=installed' in commands
 

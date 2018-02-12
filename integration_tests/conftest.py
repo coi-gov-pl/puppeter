@@ -17,6 +17,7 @@ __fixtures = [
     docker_allow_fallback
 ]
 
+
 @pytest.fixture
 def phial(ssh_service):
     return Phial(ssh_service)
