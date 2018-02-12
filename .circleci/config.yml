@@ -27,10 +27,12 @@ jobs:
           - v1-dependencies-
 
       - run:
-          name: Install dependencies
-          command: |
-            pip install tox
-            tox -e phial --notest
+          name: Install Tox
+          command: sudo pip install tox
+
+      - run:
+          name: Install dependencies via Tox environment
+          command: tox -e phial --notest
 
       - save_cache:
           paths:
