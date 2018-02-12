@@ -7,10 +7,10 @@ from integration_tests.acceptance import PuppeterAcceptance
 @pytest.fixture
 def sut():
     """System Under Test"""
-    return join('redhat', 'centos-7')
+    return join('redhat', 'oraclelinux-6')
 
 
-def test_simple_pc3x_on_centos_7(phial, capsys, regex):
+def test_simple_pc3x_on_oraclelinux_6(phial, capsys, regex):
     with capsys.disabled():
         acceptance = PuppeterAcceptance(phial)
 
@@ -23,7 +23,7 @@ def test_simple_pc3x_on_centos_7(phial, capsys, regex):
         regex.pattern(PuppeterAcceptance.PUPPET_VER_3).matches(output)
 
 
-def test_simple_pc4x_on_centos_7(phial, capsys, regex):
+def test_simple_pc4x_on_oraclelinux_6(phial, capsys, regex):
     with capsys.disabled():
         acceptance = PuppeterAcceptance(phial)
 
@@ -36,7 +36,7 @@ def test_simple_pc4x_on_centos_7(phial, capsys, regex):
         regex.pattern(PuppeterAcceptance.PUPPET_VER_4).matches(output)
 
 
-def test_simple_pc5x_on_centos_7(phial, capsys, regex):
+def test_simple_pc5x_on_oraclelinux_6(phial, capsys, regex):
     with capsys.disabled():
         acceptance = PuppeterAcceptance(phial)
 

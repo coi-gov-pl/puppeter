@@ -12,7 +12,7 @@ import paramiko
 import pytest
 import os
 import select
-
+import colorama
 import sys
 
 import six
@@ -71,13 +71,13 @@ class Phial:
         logger.info("Executing command: %s", command)
         channel = self.__ssh.get_transport().open_session()  # type: Channel
         channel.get_pty()
-        channel.exec_command(command)
         if capture:
             handler = Phial.CaptureOutputHandler()
         else:
             print("\n")
             handler = Phial.PrintOutputHandler()
         reader = self.OutputReader(channel, handler)
+        channel.exec_command(command)
         while True:
             if channel.exit_status_ready():
                 reader.read_all()
@@ -110,26 +110,27 @@ class Phial:
 
     class CaptureOutputHandler(OutputHandler):
         def __init__(self):
-            self.outbuf = StringIO()
-            self.errbuf = StringIO()
+            self.outbuf = ''
+            self.errbuf = ''
 
         def out(self, data):
-            self.outbuf.write(data)
+            self.outbuf += data
 
         def err(self, data):
-            self.errbuf.write(data)
+            self.errbuf += data
 
         def collected_output(self):
-            return self.outbuf.read()
+            return self.outbuf
 
         def collected_error_output(self):
-            return self.errbuf.read()
+            return self.errbuf
 
     class PrintOutputHandler(OutputHandler):
-        OUT_COLORED = '\e[38;5;45m%s\e[0m'
-        ERR_COLORED = '\e[38;5;165m%s\e[0m'
+        PHIAL_WRAP = colorama.Fore.WHITE + colorama.Style.DIM +\
+                     "phial >>> " + colorama.Style.RESET_ALL
 
         def __init__(self):
+            colorama.init(strip=False)
             self.outbuf = Phial.OutputBuffer()  # type: Phial.OutputBuffer
             self.errbuf = Phial.OutputBuffer()  # type: Phial.OutputBuffer
 
@@ -146,10 +147,20 @@ class Phial:
                 self.print_err(line)
 
         def print_out(self, line):
-            print(self.OUT_COLORED.format(line))
+            print("{phial}{color}{line}{rs}".format(
+                phial=self.PHIAL_WRAP,
+                color=colorama.Fore.BLUE + colorama.Style.DIM,
+                line=line,
+                rs=colorama.Style.RESET_ALL
+            ))
 
         def print_err(self, line):
-            print(self.ERR_COLORED.format(line), file=sys.stderr)
+            print("{phial}{color}{line}{rs}".format(
+                phial=self.PHIAL_WRAP,
+                color=colorama.Fore.RED,
+                line=line,
+                rs=colorama.Style.RESET_ALL
+            ), file=sys.stderr)
 
     class OutputReader:
         def __init__(self, channel, handler):
@@ -170,14 +181,23 @@ class Phial:
 
     class OutputBuffer:
         def __init__(self):
-            self.buf = StringIO()  # type: StringIO
+            self.buf = ''
 
         def recv(self, data):
-            self.buf.write(data)
+            self.buf += data
 
         def lines_collected(self):
             # type: () -> Sequence[str]
-            return self.buf.readlines()
+            splited = self.buf.splitlines(keepends=True)
+            collected = []
+            newbuf = ''
+            for line in splited:
+                if line.endswith(('\n', '\r\n')):
+                    collected.append(line.rstrip())
+                else:
+                    newbuf += line
+            self.buf = newbuf
+            return collected
 
 
 @pytest.fixture

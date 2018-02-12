@@ -1,0 +1,7 @@
+# Docker Compose
+version: '3'
+services:
+  sut:
+    build: ./
+    ports:
+      - 22
