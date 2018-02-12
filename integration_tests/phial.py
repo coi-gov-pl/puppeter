@@ -335,12 +335,13 @@ class DockerComposeExecutor(object):
 
 
 @pytest.fixture
-def docker_compose_project_name():
+def docker_compose_project_name(request):
     """ Generate a project name using the current process' PID.
 
     Override this fixture in your tests if you need a particular project name.
     """
-    return "pytest{}".format(os.getpid())
+    testname = request.node.name
+    return "phial-{pid}-{testname}".format(pid=os.getpid(), testname=testname)
 
 
 @pytest.fixture
@@ -356,7 +357,7 @@ def docker_allow_fallback():
 
 @pytest.fixture
 def docker_services(
-    docker_compose_file, docker_allow_fallback, docker_compose_project_name
+    docker_compose_file, docker_allow_fallback, docker_compose_project_name, capsys
 ):
     """Ensure all Docker-based services are up and running."""
 
@@ -374,10 +375,12 @@ def docker_services(
             return
 
     # Spawn containers.
-    docker_compose.execute('up --build -d')
+    with capsys.disabled():
+        print(docker_compose.execute('up --build -d'))
 
     # Let test(s) run.
     yield Services(docker_compose)
 
     # Clean up.
-    docker_compose.execute('down -v')
+    with capsys.disabled():
+        print(docker_compose.execute('down -v'))
