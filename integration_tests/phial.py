@@ -226,7 +226,7 @@ def execute(command, success_codes=(0,)):
     """Run a shell command."""
     try:
         output = subprocess.check_output(
-            command, stderr=subprocess.STDOUT, shell=True,
+            command, stderr=subprocess.STDOUT, shell=True, env=os.environ.copy()
         )
         status = 0
     except subprocess.CalledProcessError as error:
