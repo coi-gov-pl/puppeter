@@ -40,68 +40,20 @@ references:
       command: tox -e phial -- -m $GROUP
 
   steps: &steps
-    - checkout
-    - setup_remote_docker
-    - *install-docker-compose
-    - *restore-cache
-    - *install-tox
-    - *fetch-dependencies-via-tox
-    - *save-cache
-    - *phial
+    steps:
+      - checkout
+      - setup_remote_docker
+      - *install-docker-compose
+      - *restore-cache
+      - *install-tox
+      - *fetch-dependencies-via-tox
+      - *save-cache
+      - *phial
 
-jobs:
-  centos-6:
-    <<: *container-defaults
-    environment:
-      GROUP: centos6
-    steps:
-        <<: *steps
-  centos-7:
-    <<: *container-defaults
-    environment:
-      GROUP: centos7
-    steps:
-        <<: *steps
-  oraclelinux-6:
-    <<: *container-defaults
-    environment:
-      GROUP: oraclelinux6
-    steps:
-        <<: *steps
-  oraclelinux-7:
-    <<: *container-defaults
-    environment:
-      GROUP: oraclelinux7
-    steps:
-        <<: *steps
-  ubuntu-1404:
-    <<: *container-defaults
-    environment:
-      GROUP: ubuntu1404
-    steps:
-        <<: *steps
-  ubuntu-1604:
-    <<: *container-defaults
-    environment:
-      GROUP: ubuntu1604
-    steps:
-        <<: *steps
-  debian-8:
-    <<: *container-defaults
-    environment:
-      GROUP: debian8
-    steps:
-        <<: *steps
-  debian-9:
-    <<: *container-defaults
-    environment:
-      GROUP: debian9
-    steps:
-        <<: *steps
-          
+
 workflows:
   version: 2
-  build:
+  integration-tests:
     jobs:
       - centos-6
       - centos-7
@@ -111,3 +63,46 @@ workflows:
       - debian-9
       - ubuntu-1404
       - ubuntu-1604
+
+jobs:
+  centos-6:
+    <<: *container-defaults
+    <<: *steps
+    environment:
+      GROUP: centos6
+
+  centos-7:
+    <<: *container-defaults
+    <<: *steps
+    environment:
+      GROUP: centos7
+  oraclelinux-6:
+    <<: *container-defaults
+    <<: *steps
+    environment:
+      GROUP: oraclelinux6
+  oraclelinux-7:
+    <<: *container-defaults
+    <<: *steps
+    environment:
+      GROUP: oraclelinux7
+  ubuntu-1404:
+    <<: *container-defaults
+    <<: *steps
+    environment:
+      GROUP: ubuntu1404
+  ubuntu-1604:
+    <<: *container-defaults
+    <<: *steps
+    environment:
+      GROUP: ubuntu1604
+  debian-8:
+    <<: *container-defaults
+    <<: *steps
+    environment:
+      GROUP: debian8
+  debian-9:
+    <<: *container-defaults
+    <<: *steps
+    environment:
+      GROUP: debian9
