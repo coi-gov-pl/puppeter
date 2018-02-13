@@ -10,6 +10,8 @@ def sut():
     return join('debian', 'ubuntu-1604')
 
 
+@pytest.mark.skip('TODO: Puppet has dropped support for Ubuntu 16.04 on Puppet Collection 3.x - installation is needed to be reworked')
+@pytest.mark.ubuntu1604
 def test_simple_pc3x_on_ubuntu_1604(phial, capsys, regex):
     with capsys.disabled():
         acceptance = PuppeterAcceptance(phial)
@@ -18,11 +20,12 @@ def test_simple_pc3x_on_ubuntu_1604(phial, capsys, regex):
         acceptance.run_puppeter('simple-pc3x.yml')
 
         exitcode, output, error = phial.exec('puppet --version', capture=True)
-        assert exitcode == 0
         assert error == ''
         regex.pattern(PuppeterAcceptance.PUPPET_VER_3).matches(output)
+        assert exitcode == 0
 
 
+@pytest.mark.ubuntu1604
 def test_simple_pc4x_on_ubuntu_1604(phial, capsys, regex):
     with capsys.disabled():
         acceptance = PuppeterAcceptance(phial)
@@ -31,11 +34,12 @@ def test_simple_pc4x_on_ubuntu_1604(phial, capsys, regex):
         acceptance.run_puppeter('simple-pc4x.yml')
 
         exitcode, output, error = phial.exec('puppet --version', capture=True)
-        assert exitcode == 0
         assert error == ''
         regex.pattern(PuppeterAcceptance.PUPPET_VER_4).matches(output)
+        assert exitcode == 0
 
 
+@pytest.mark.ubuntu1604
 def test_simple_pc5x_on_ubuntu_1604(phial, capsys, regex):
     with capsys.disabled():
         acceptance = PuppeterAcceptance(phial)
@@ -44,6 +48,6 @@ def test_simple_pc5x_on_ubuntu_1604(phial, capsys, regex):
         acceptance.run_puppeter('simple-pc5x.yml')
 
         exitcode, output, error = phial.exec('puppet --version', capture=True)
-        assert exitcode == 0
         assert error == ''
         regex.pattern(PuppeterAcceptance.PUPPET_VER_5).matches(output)
+        assert exitcode == 0

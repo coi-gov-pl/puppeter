@@ -1,7 +1,9 @@
 FROM oraclelinux:6
 
-RUN yum install -y epel-release
-RUN yum install -y openssh-server python-pip
+RUN yum-config-manager --enable public_ol6_software_collections
+RUN yum install -y openssh-server python27-python-pip
+ADD enablepython27.sh /etc/profile.d/enablepython27.sh
+
 RUN mkdir /var/run/sshd
 RUN ssh-keygen -t rsa -f /etc/ssh/ssh_host_rsa_key -N ''
 RUN echo 'root:phial' | chpasswd

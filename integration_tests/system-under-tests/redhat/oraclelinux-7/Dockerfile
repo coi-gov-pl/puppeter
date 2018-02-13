@@ -1,6 +1,6 @@
 FROM oraclelinux:7
 
-RUN yum install -y epel-release
+RUN yum install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
 RUN yum install -y openssh-server python-pip
 RUN mkdir /var/run/sshd
 RUN ssh-keygen -t rsa -f /etc/ssh/ssh_host_rsa_key -N ''
@@ -12,6 +12,8 @@ RUN sed 's@session\s*required\s*pam_loginuid.so@session optional pam_loginuid.so
 
 ENV NOTVISIBLE "in users profile"
 RUN echo "export VISIBLE=now" >> /etc/profile
+
+ENV LANG en_US.UTF-8
 
 EXPOSE 22
 CMD ["/usr/sbin/sshd", "-D"]

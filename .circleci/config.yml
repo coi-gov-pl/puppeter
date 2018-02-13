@@ -2,46 +2,100 @@
 #
 # Check https://circleci.com/docs/2.0/language-python/ for more details
 version: 2
-jobs:
-  build:
+
+references:
+  container-defaults: &container-defaults
+    working_directory: ~/repo
     docker:
       - image: circleci/python:3.6.1
+  install-docker-compose: &install-docker-compose
+    run:
+      name: Install Docker Compose
+      command: |
+        sudo curl -L https://github.com/docker/compose/releases/download/1.19.0/docker-compose-`uname -s`-`uname -m` -o /usr/local/bin/docker-compose
+        sudo chmod +x /usr/local/bin/docker-compose
+  restore-cache: &restore-cache
+    # Download and cache dependencies
+    restore_cache:
+      keys:
+        - v1-dependencies-{{ checksum "tox.ini" }}
+        # fallback to using the latest cache if no exact match is found
+        - v1-dependencies-
+  install-tox: &install-tox
+    run:
+      name: Install Tox
+      command: sudo pip install tox
+  fetch-dependencies-via-tox: &fetch-dependencies-via-tox
+    run:
+      name: Fetch dependencies via Tox environment
+      command: tox -e phial --notest
+  save-cache: &save-cache
+    save_cache:
+      paths:
+       - ./tox
+      key: v1-dependencies-{{ checksum "tox.ini" }}
+  phial: &phial
+    run:
+      name: Run integration tests using Phial
+      command: tox -e phial -- -m $GROUP
 
-    working_directory: ~/repo
+  steps: &steps
+    - checkout
+    - setup_remote_docker
+    - *install-docker-compose
+    - *restore-cache
+    - *install-tox
+    - *fetch-dependencies-via-tox
+    - *save-cache
+    - *phial
 
+jobs:
+  centos-6:
+    <<: *container-defaults
+    environment:
+      GROUP: centos6
     steps:
-      - checkout
-      - setup_remote_docker
-
-      - run:
-          name: Install Docker Compose
-          command: |
-            sudo curl -L https://github.com/docker/compose/releases/download/1.19.0/docker-compose-`uname -s`-`uname -m` -o /usr/local/bin/docker-compose
-            sudo chmod +x /usr/local/bin/docker-compose
-
-      # Download and cache dependencies
-      - restore_cache:
-          keys:
-          - v1-dependencies-{{ checksum "tox.ini" }}
-          # fallback to using the latest cache if no exact match is found
-          - v1-dependencies-
-
-      - run:
-          name: Install Tox
-          command: sudo pip install tox
-
-      - run:
-          name: Install dependencies via Tox environment
-          command: tox -e phial --notest
-
-      - save_cache:
-          paths:
-            - ./tox
-          key: v1-dependencies-{{ checksum "tox.ini" }}
-        
-      # run integration tests!
-      - run:
-          name: Run integration tests
-          command: |
-            tox -e phial
+        <<: *steps
+  centos-7:
+    <<: *container-defaults
+    environment:
+      GROUP: centos7
+    steps:
+        <<: *steps
+  oraclelinux-6:
+    <<: *container-defaults
+    environment:
+      GROUP: oraclelinux6
+    steps:
+        <<: *steps
+  oraclelinux-7:
+    <<: *container-defaults
+    environment:
+      GROUP: oraclelinux7
+    steps:
+        <<: *steps
+  ubuntu-1404:
+    <<: *container-defaults
+    environment:
+      GROUP: ubuntu1404
+    steps:
+        <<: *steps
+  ubuntu-1604:
+    <<: *container-defaults
+    environment:
+      GROUP: ubuntu1604
+    steps:
+        <<: *steps
+  debian-8:
+    <<: *container-defaults
+    environment:
+      GROUP: debian8
+    steps:
+        <<: *steps
+  debian-9:
+    <<: *container-defaults
+    environment:
+      GROUP: debian9
+    steps:
+        <<: *steps
           

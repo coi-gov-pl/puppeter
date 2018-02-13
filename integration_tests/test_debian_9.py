@@ -10,6 +10,8 @@ def sut():
     return join('debian', 'debian-9')
 
 
+@pytest.mark.skip('not yet implemented')
+@pytest.mark.debian9
 def test_simple_pc3x_on_debian_9(phial, capsys, regex):
     with capsys.disabled():
         acceptance = PuppeterAcceptance(phial)
@@ -18,11 +20,13 @@ def test_simple_pc3x_on_debian_9(phial, capsys, regex):
         acceptance.run_puppeter('simple-pc3x.yml')
 
         exitcode, output, error = phial.exec('puppet --version', capture=True)
-        assert exitcode == 0
         assert error == ''
         regex.pattern(PuppeterAcceptance.PUPPET_VER_3).matches(output)
+        assert exitcode == 0
 
 
+@pytest.mark.skip('not yet implemented')
+@pytest.mark.debian9
 def test_simple_pc4x_on_debian_9(phial, capsys, regex):
     with capsys.disabled():
         acceptance = PuppeterAcceptance(phial)
@@ -31,11 +35,13 @@ def test_simple_pc4x_on_debian_9(phial, capsys, regex):
         acceptance.run_puppeter('simple-pc4x.yml')
 
         exitcode, output, error = phial.exec('puppet --version', capture=True)
-        assert exitcode == 0
         assert error == ''
         regex.pattern(PuppeterAcceptance.PUPPET_VER_4).matches(output)
+        assert exitcode == 0
 
 
+@pytest.mark.skip('not yet implemented')
+@pytest.mark.debian9
 def test_simple_pc5x_on_debian_9(phial, capsys, regex):
     with capsys.disabled():
         acceptance = PuppeterAcceptance(phial)
@@ -44,6 +50,6 @@ def test_simple_pc5x_on_debian_9(phial, capsys, regex):
         acceptance.run_puppeter('simple-pc5x.yml')
 
         exitcode, output, error = phial.exec('puppet --version', capture=True)
-        assert exitcode == 0
         assert error == ''
         regex.pattern(PuppeterAcceptance.PUPPET_VER_5).matches(output)
+        assert exitcode == 0

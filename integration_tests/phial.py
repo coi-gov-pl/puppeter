@@ -7,7 +7,6 @@ import re
 import subprocess
 import time
 import timeit
-import logging
 import paramiko
 import pytest
 import os
@@ -20,7 +19,36 @@ from paramiko import SFTPClient, SSHClient, Channel
 from paramiko.common import o777
 from typing import Sequence
 
-logger = logging.getLogger()
+
+class PhialLogger:
+    PHIAL_WRAP = colorama.Fore.WHITE + colorama.Style.DIM + "phial >>> " + colorama.Style.RESET_ALL
+    PHIAL_INFO = colorama.Fore.CYAN + "phial INFO: "
+
+    def info(self, message, *args):
+        self.__print("{phial}{line}{rs}".format(
+            phial=PhialLogger.PHIAL_INFO,
+            line=message % args,
+            rs=colorama.Style.RESET_ALL
+        ))
+
+    def stdout(self, line):
+        self.__print("{phial}{color}{line}{rs}".format(
+            phial=PhialLogger.PHIAL_WRAP,
+            color=colorama.Fore.BLUE,
+            line=line,
+            rs=colorama.Style.RESET_ALL
+        ))
+
+    def stderr(self, line):
+        self.__print("{phial}{color}{line}{rs}".format(
+            phial=PhialLogger.PHIAL_WRAP,
+            color=colorama.Fore.RED,
+            line=line,
+            rs=colorama.Style.RESET_ALL
+        ), file=sys.stderr)
+
+    def __print(self, message, **kwargs):
+        print(message, **kwargs)
 
 
 class DirSFTPClient(paramiko.SFTPClient):
@@ -51,6 +79,9 @@ class DirSFTPClient(paramiko.SFTPClient):
                 raise
 
 
+logger = PhialLogger()
+
+
 class Phial:
     def __init__(self, ssh_service):
         self.__ssh = ssh_service  # type: SSHClient
@@ -73,10 +104,9 @@ class Phial:
         if capture:
             handler = Phial.CaptureOutputHandler()
         else:
-            print("\n")
             handler = Phial.PrintOutputHandler()
         reader = self.OutputReader(channel, handler)
-        channel.exec_command(command)
+        channel.exec_command(self._bashify(command))
         while True:
             if channel.exit_status_ready():
                 reader.read_all()
@@ -125,8 +155,6 @@ class Phial:
             return self.errbuf
 
     class PrintOutputHandler(OutputHandler):
-        PHIAL_WRAP = colorama.Fore.WHITE + colorama.Style.DIM + "phial >>> " + colorama.Style.RESET_ALL
-
         def __init__(self):
             colorama.init(strip=False)
             self.outbuf = Phial.OutputBuffer()  # type: Phial.OutputBuffer
@@ -136,29 +164,13 @@ class Phial:
             self.outbuf.recv(data)
             lines = self.outbuf.lines_collected()
             for line in lines:
-                self.print_out(line)
+                logger.stdout(line)
 
         def err(self, data):
             self.errbuf.recv(data)
             lines = self.errbuf.lines_collected()
             for line in lines:
-                self.print_err(line)
-
-        def print_out(self, line):
-            print("{phial}{color}{line}{rs}".format(
-                phial=self.PHIAL_WRAP,
-                color=colorama.Fore.BLUE + colorama.Style.DIM,
-                line=line,
-                rs=colorama.Style.RESET_ALL
-            ))
-
-        def print_err(self, line):
-            print("{phial}{color}{line}{rs}".format(
-                phial=self.PHIAL_WRAP,
-                color=colorama.Fore.RED,
-                line=line,
-                rs=colorama.Style.RESET_ALL
-            ), file=sys.stderr)
+                logger.stderr(line)
 
     class OutputReader:
         def __init__(self, channel, handler):
@@ -171,10 +183,10 @@ class Phial:
 
         def read_chunk(self, size=32):
             if self.__channel.recv_stderr_ready():
-                data = self.__channel.recv_stderr(size).decode()
+                data = self.__channel.recv_stderr(size).decode(errors="ignore")
                 self.__handler.err(data)
             if self.__channel.recv_ready():
-                data = self.__channel.recv(size).decode()
+                data = self.__channel.recv(size).decode(errors="ignore")
                 self.__handler.out(data)
 
     class OutputBuffer:
@@ -196,6 +208,10 @@ class Phial:
                     newbuf += line
             self.buf = newbuf
             return collected
+
+    def _bashify(self, command):
+        filtered = command.replace("'", "\\'")
+        return "bash -lc '{command}'".format(command=filtered)
 
 
 @pytest.fixture
@@ -378,9 +394,11 @@ def docker_services(
     with capsys.disabled():
         print(docker_compose.execute('up --build -d'))
 
-    # Let test(s) run.
-    yield Services(docker_compose)
+    try:
+        # Let test(s) run.
+        yield Services(docker_compose)
 
-    # Clean up.
-    with capsys.disabled():
-        print(docker_compose.execute('down -v'))
+    finally:
+        # Clean up.
+        with capsys.disabled():
+            print(docker_compose.execute('down -v'))
