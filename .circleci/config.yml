@@ -99,3 +99,15 @@ jobs:
     steps:
         <<: *steps
           
+workflows:
+  version: 2
+  build:
+    jobs:
+      - centos-6
+      - centos-7
+      - oraclelinux-6
+      - oraclelinux-7
+      - debian-8
+      - debian-9
+      - ubuntu-1404
+      - ubuntu-1604
