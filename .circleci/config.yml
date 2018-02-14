@@ -23,10 +23,15 @@ references:
         - v1-dependencies-{{ checksum "tox.ini" }}
         # fallback to using the latest cache if no exact match is found
         - v1-dependencies-
-  remove-python-versions: &remove-python-versions
+  intall-python-versions: &intall-python-versions
     run:
-      name: Remove unneeded .python-versions file
-      command: rm -v ~/project/.python-version
+      name: Install required Python versions
+      command: |
+        cd ~/project
+        for ver in $(cat .python-version); do
+          pyenv install -s $ver &
+        done
+        wait
   install-tox: &install-tox
     run:
       name: Install Tox
@@ -50,7 +55,7 @@ references:
       - checkout
       - *install-docker-compose
       - *restore-cache
-      - *remove-python-versions
+      - *intall-python-versions
       - *install-tox
       - *fetch-dependencies-via-tox
       - *save-cache
