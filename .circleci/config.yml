@@ -4,10 +4,6 @@
 version: 2
 
 references:
-  container-defaults:
-    working_directory: ~/repo
-    docker:
-      - image: circleci/python:3.6.1
   machine-defaults: &environment-defaults
     machine: true
   install-docker-compose: &install-docker-compose
@@ -16,13 +12,6 @@ references:
       command: |
         sudo curl -L https://github.com/docker/compose/releases/download/1.19.0/docker-compose-`uname -s`-`uname -m` -o /usr/local/bin/docker-compose
         sudo chmod +x /usr/local/bin/docker-compose
-  restore-cache: &restore-cache
-    # Download and cache dependencies
-    restore_cache:
-      keys:
-        - v1-dependencies-{{ checksum "tox.ini" }}
-        # fallback to using the latest cache if no exact match is found
-        - v1-dependencies-
   intall-python-versions: &intall-python-versions
     run:
       name: Install required Python versions
@@ -38,13 +27,30 @@ references:
       command: sudo pip install tox
   fetch-dependencies-via-tox: &fetch-dependencies-via-tox
     run:
-      name: Fetch dependencies via Tox environment
+      name: Fetch dependencies via Tox
       command: tox -e phial --notest
-  save-cache: &save-cache
+  restore-cache-dependencies: &restore-cache-dependencies
+    # Download and cache dependencies
+    restore_cache:
+      keys:
+        - v1-dependencies-{{ checksum "tox.ini" }}
+        # fallback to using the latest cache if no exact match is found
+        - v1-dependencies-
+  save-cache-dependencies: &save-cache-dependencies
     save_cache:
       paths:
        - ./tox
       key: v1-dependencies-{{ checksum "tox.ini" }}
+  restore-cache-pyenv: &restore-cache-pyenv
+    restore_cache:
+      keys:
+        - v1-pyenv-{{ checksum ".python-version" }}
+        - v1-pyenv-
+  save-cache-pyenv: &save-cache-pyenv
+    save_cache:
+      paths:
+       - ~/.pyenv
+      key: v1-pyenv-{{ checksum ".python-version" }}
   phial: &phial
     run:
       name: Run integration tests using Phial
@@ -54,11 +60,13 @@ references:
     steps:
       - checkout
       - *install-docker-compose
-      - *restore-cache
+      - *restore-cache-pyenv
       - *intall-python-versions
+      - *save-cache-pyenv
       - *install-tox
+      - *restore-cache-dependencies
       - *fetch-dependencies-via-tox
-      - *save-cache
+      - *save-cache-dependencies
       - *phial
 
 

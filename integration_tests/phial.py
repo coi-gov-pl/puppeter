@@ -389,7 +389,7 @@ def docker_compose_project_name(request):
     Override this fixture in your tests if you need a particular project name.
     """
     testname = request.node.name
-    return "phial-{pid}-{testname}".format(pid=os.getpid(), testname=testname)
+    return "phial-{testname}".format(testname=testname)
 
 
 @pytest.fixture

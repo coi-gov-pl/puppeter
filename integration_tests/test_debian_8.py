@@ -10,7 +10,6 @@ def sut():
     return join('debian', 'debian-8')
 
 
-@pytest.mark.skip('not yet implemented')
 @pytest.mark.debian8
 def test_simple_pc3x_on_debian_8(phial, capsys, regex):
     with capsys.disabled():
@@ -25,7 +24,6 @@ def test_simple_pc3x_on_debian_8(phial, capsys, regex):
         assert exitcode == 0
 
 
-@pytest.mark.skip('not yet implemented')
 @pytest.mark.debian8
 def test_simple_pc4x_on_debian_8(phial, capsys, regex):
     with capsys.disabled():
@@ -40,7 +38,6 @@ def test_simple_pc4x_on_debian_8(phial, capsys, regex):
         assert exitcode == 0
 
 
-@pytest.mark.skip('not yet implemented')
 @pytest.mark.debian8
 def test_simple_pc5x_on_debian_8(phial, capsys, regex):
     with capsys.disabled():
