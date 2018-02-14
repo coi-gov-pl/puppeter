@@ -179,9 +179,9 @@ class Phial:
 
         def read_all(self):
             while self.__channel.recv_stderr_ready() or self.__channel.recv_ready():
-                self.read_chunk(1024)
+                self.read_chunk(4096)
 
-        def read_chunk(self, size=32):
+        def read_chunk(self, size=1024):
             if self.__channel.recv_stderr_ready():
                 data = self.__channel.recv_stderr(size).decode(errors="ignore")
                 self.__handler.err(data)
@@ -255,6 +255,32 @@ def execute(command, success_codes=(0,)):
             'Command %r returned %d: """%s""".' % (command, status, output)
         )
     return output
+
+
+def execute_streaming(command, success_codes=(0,)):
+    """Run a shell command streaming output to console."""
+    handler = Phial.PrintOutputHandler()
+    p = subprocess.Popen(command, shell=True,
+                         stdout=subprocess.PIPE,
+                         stderr=subprocess.PIPE)
+    while True:
+        retcode = p.poll()
+        if retcode is not None:
+            handler.err(p.stderr.read().decode(errors='ignore'))
+            handler.out(p.stdout.read().decode(errors='ignore'))
+            break
+        rl, wl, xl = select.select([p.stderr], [], [], 0.0)
+        if len(rl) > 0:
+            contents = p.stderr.read(1024).decode(errors='ignore')
+            handler.err(contents)
+        rl, wl, xl = select.select([p.stdout], [], [], 0.0)
+        if len(rl) > 0:
+            contents = p.stdout.read(1024).decode(errors='ignore')
+            handler.out(contents)
+    if retcode not in success_codes:
+        raise Exception(
+            'Command %r returned %d.' % (command, retcode)
+        )
 
 
 @pytest.fixture(scope='session')
@@ -343,11 +369,17 @@ class DockerComposeExecutor(object):
     _compose_project_name = attr.ib()
 
     def execute(self, subcommand):
+        return execute(self.__compose_command(subcommand))
+
+    def execute_streaming(self, subcommand):
+        return execute_streaming(self.__compose_command(subcommand))
+
+    def __compose_command(self, subcommand):
         command = "docker-compose"
         for compose_file in self._compose_files:
             command += ' -f "{}"'.format(compose_file)
         command += ' -p "{}" {}'.format(self._compose_project_name, subcommand)
-        return execute(command)
+        return command
 
 
 @pytest.fixture
@@ -392,7 +424,7 @@ def docker_services(
 
     # Spawn containers.
     with capsys.disabled():
-        print(docker_compose.execute('up --build -d'))
+        docker_compose.execute_streaming('up --build -d')
 
     try:
         # Let test(s) run.
@@ -401,4 +433,4 @@ def docker_services(
     finally:
         # Clean up.
         with capsys.disabled():
-            print(docker_compose.execute('down -v'))
+            docker_compose.execute_streaming('down -v')

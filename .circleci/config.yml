@@ -29,7 +29,7 @@ references:
       command: |
         cd ~/project
         for ver in $(cat .python-version); do
-          pyenv install -s $ver &
+          pyenv install -sv $ver &
         done
         wait
   install-tox: &install-tox

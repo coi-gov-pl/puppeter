@@ -10,7 +10,10 @@ def sut():
     return join('debian', 'ubuntu-1604')
 
 
-@pytest.mark.skip('TODO: Puppet has dropped support for Ubuntu 16.04 on Puppet Collection 3.x - installation is needed to be reworked')
+@pytest.mark.skip(
+    'TODO: Puppet has dropped support for Ubuntu 16.04 on Puppet Collection 3.x'
+    '- installation is needed to be reworked'
+)
 @pytest.mark.ubuntu1604
 def test_simple_pc3x_on_ubuntu_1604(phial, capsys, regex):
     with capsys.disabled():
