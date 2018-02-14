@@ -23,12 +23,6 @@ references:
         - v1-dependencies-{{ checksum "tox.ini" }}
         # fallback to using the latest cache if no exact match is found
         - v1-dependencies-
-  install-python3: &install-python3
-    run:
-      name: Install Python 3.6.1
-      command: |
-        curl -L https://raw.githubusercontent.com/pyenv/pyenv-installer/master/bin/pyenv-installer | bash
-        pyenv install 3.6.1
   install-tox: &install-tox
     run:
       name: Install Tox
@@ -52,7 +46,6 @@ references:
       - checkout
       - *install-docker-compose
       - *restore-cache
-      - *install-python3
       - *install-tox
       - *fetch-dependencies-via-tox
       - *save-cache
