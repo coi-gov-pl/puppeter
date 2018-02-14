@@ -179,9 +179,9 @@ class Phial:
 
         def read_all(self):
             while self.__channel.recv_stderr_ready() or self.__channel.recv_ready():
-                self.read_chunk(4096)
+                self.read_chunk(1024)
 
-        def read_chunk(self, size=1024):
+        def read_chunk(self, size=32):
             if self.__channel.recv_stderr_ready():
                 data = self.__channel.recv_stderr(size).decode(errors="ignore")
                 self.__handler.err(data)
@@ -271,11 +271,11 @@ def execute_streaming(command, success_codes=(0,)):
             break
         rl, wl, xl = select.select([p.stderr], [], [], 0.0)
         if len(rl) > 0:
-            contents = p.stderr.read(1024).decode(errors='ignore')
+            contents = p.stderr.read(16).decode(errors='ignore')
             handler.err(contents)
         rl, wl, xl = select.select([p.stdout], [], [], 0.0)
         if len(rl) > 0:
-            contents = p.stdout.read(1024).decode(errors='ignore')
+            contents = p.stdout.read(16).decode(errors='ignore')
             handler.out(contents)
     if retcode not in success_codes:
         raise Exception(

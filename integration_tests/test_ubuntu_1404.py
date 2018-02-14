@@ -48,5 +48,5 @@ def test_simple_pc5x_on_ubuntu_1404(phial, capsys, regex):
 
         exitcode, output, error = phial.exec('puppet --version', capture=True)
         assert error == ''
-        regex.pattern(PuppeterAcceptance.PUPPET_VER_3).matches(output)
+        regex.pattern(PuppeterAcceptance.PUPPET_VER_5).matches(output)
         assert exitcode == 0
