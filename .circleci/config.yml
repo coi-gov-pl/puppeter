@@ -23,6 +23,10 @@ references:
         - v1-dependencies-{{ checksum "tox.ini" }}
         # fallback to using the latest cache if no exact match is found
         - v1-dependencies-
+  remove-python-versions: &remove-python-versions
+    run:
+      name: Remove unneeded .python-versions file
+      command: rm -v .python-versions
   install-tox: &install-tox
     run:
       name: Install Tox
@@ -46,6 +50,7 @@ references:
       - checkout
       - *install-docker-compose
       - *restore-cache
+      - *remove-python-versions
       - *install-tox
       - *fetch-dependencies-via-tox
       - *save-cache
@@ -71,7 +76,6 @@ jobs:
     <<: *steps
     environment:
       GROUP: centos6
-
   centos-7:
     <<: *environment-defaults
     <<: *steps
