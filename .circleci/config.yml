@@ -26,7 +26,7 @@ references:
   remove-python-versions: &remove-python-versions
     run:
       name: Remove unneeded .python-versions file
-      command: rm -v $CIRCLE_WORKING_DIRECTORY/.python-versions
+      command: rm -v $CIRCLE_WORKING_DIRECTORY/.python-version
   install-tox: &install-tox
     run:
       name: Install Tox
