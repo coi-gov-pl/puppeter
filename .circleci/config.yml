@@ -4,10 +4,12 @@
 version: 2
 
 references:
-  container-defaults: &container-defaults
+  container-defaults:
     working_directory: ~/repo
     docker:
       - image: circleci/python:3.6.1
+  machine-defaults: &environment-defaults
+    machine: true
   install-docker-compose: &install-docker-compose
     run:
       name: Install Docker Compose
@@ -42,7 +44,7 @@ references:
   steps: &steps
     steps:
       - checkout
-      - setup_remote_docker
+      # - setup_remote_docker
       - *install-docker-compose
       - *restore-cache
       - *install-tox
@@ -66,43 +68,43 @@ workflows:
 
 jobs:
   centos-6:
-    <<: *container-defaults
+    <<: *environment-defaults
     <<: *steps
     environment:
       GROUP: centos6
 
   centos-7:
-    <<: *container-defaults
+    <<: *environment-defaults
     <<: *steps
     environment:
       GROUP: centos7
   oraclelinux-6:
-    <<: *container-defaults
+    <<: *environment-defaults
     <<: *steps
     environment:
       GROUP: oraclelinux6
   oraclelinux-7:
-    <<: *container-defaults
+    <<: *environment-defaults
     <<: *steps
     environment:
       GROUP: oraclelinux7
   ubuntu-1404:
-    <<: *container-defaults
+    <<: *environment-defaults
     <<: *steps
     environment:
       GROUP: ubuntu1404
   ubuntu-1604:
-    <<: *container-defaults
+    <<: *environment-defaults
     <<: *steps
     environment:
       GROUP: ubuntu1604
   debian-8:
-    <<: *container-defaults
+    <<: *environment-defaults
     <<: *steps
     environment:
       GROUP: debian8
   debian-9:
-    <<: *container-defaults
+    <<: *environment-defaults
     <<: *steps
     environment:
       GROUP: debian9
