@@ -48,6 +48,10 @@ references:
       paths:
        - /opt/circleci/.pyenv/versions
       key: v2-pyenv-{{ checksum ".python-version" }}
+  print-pyenv-versions: &print-pyenv-versions
+    run:
+      name: Print Pyenv's installed Python versions
+      command: pyenv versions
   phial: &phial
     run:
       name: Run integration tests using Phial
@@ -60,6 +64,7 @@ references:
       - *restore-cache-pyenv
       - *intall-python-versions
       - *save-cache-pyenv
+      - *print-pyenv-versions
       - *install-tox
       - *restore-cache-dependencies
       - *fetch-dependencies-via-tox
