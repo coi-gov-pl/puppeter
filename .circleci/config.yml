@@ -33,12 +33,12 @@ references:
     # Download and cache dependencies
     restore_cache:
       keys:
-        - v1-dependencies-{{ checksum "tox.ini" }}
+        - v2-dependencies-{{ checksum "tox.ini" }}
   save-cache-dependencies: &save-cache-dependencies
     save_cache:
       paths:
        - ./tox
-      key: v1-dependencies-{{ checksum "tox.ini" }}
+      key: v2-dependencies-{{ checksum "tox.ini" }}
   restore-cache-pyenv: &restore-cache-pyenv
     restore_cache:
       keys:

@@ -260,6 +260,7 @@ def execute(command, success_codes=(0,)):
 def execute_streaming(command, success_codes=(0,)):
     """Run a shell command streaming output to console."""
     handler = Phial.PrintOutputHandler()
+
     p = subprocess.Popen(command, shell=True,
                          stdout=subprocess.PIPE,
                          stderr=subprocess.PIPE)
@@ -269,14 +270,13 @@ def execute_streaming(command, success_codes=(0,)):
             handler.err(p.stderr.read().decode(errors='ignore'))
             handler.out(p.stdout.read().decode(errors='ignore'))
             break
-        rl, wl, xl = select.select([p.stderr], [], [], 0.0)
-        if len(rl) > 0:
-            contents = p.stderr.read(16).decode(errors='ignore')
+        while len(select.select([p.stderr], [], [], 0)[0]) == 1:
+            contents = p.stderr.read(1).decode(errors='ignore')
             handler.err(contents)
-        rl, wl, xl = select.select([p.stdout], [], [], 0.0)
-        if len(rl) > 0:
-            contents = p.stdout.read(16).decode(errors='ignore')
+        while len(select.select([p.stdout], [], [], 0)[0]) == 1:
+            contents = p.stdout.read(1).decode(errors='ignore')
             handler.out(contents)
+        time.sleep(0.01)
     if retcode not in success_codes:
         raise Exception(
             'Command %r returned %d.' % (command, retcode)
