@@ -15,6 +15,7 @@ references:
   intall-python-versions: &intall-python-versions
     run:
       name: Install required Python versions
+      shell: /bin/bash -leo pipefail
       command: |
         cd ~/project
         for ver in $(cat .python-version); do
@@ -25,10 +26,6 @@ references:
     run:
       name: Install Tox
       command: sudo pip install tox
-  fetch-dependencies-via-tox: &fetch-dependencies-via-tox
-    run:
-      name: Fetch dependencies via Tox
-      command: tox -e phial --notest
   restore-cache-dependencies: &restore-cache-dependencies
     # Download and cache dependencies
     restore_cache:
@@ -48,13 +45,16 @@ references:
       paths:
        - /opt/circleci/.pyenv/versions
       key: v2-pyenv-{{ checksum ".python-version" }}
-  print-pyenv-versions: &print-pyenv-versions
+
+  fetch-dependencies-via-tox: &fetch-dependencies-via-tox
     run:
-      name: Print Pyenv's installed Python versions
-      command: pyenv versions
+      name: Fetch dependencies via Tox
+      shell: /bin/bash -leo pipefail
+      command: tox -e phial --notest
   phial: &phial
     run:
       name: Run integration tests using Phial
+      shell: /bin/bash -leo pipefail
       command: tox -e phial -- -m $GROUP
 
   steps: &steps
@@ -64,7 +64,6 @@ references:
       - *restore-cache-pyenv
       - *intall-python-versions
       - *save-cache-pyenv
-      - *print-pyenv-versions
       - *install-tox
       - *restore-cache-dependencies
       - *fetch-dependencies-via-tox
