@@ -34,8 +34,6 @@ references:
     restore_cache:
       keys:
         - v1-dependencies-{{ checksum "tox.ini" }}
-        # fallback to using the latest cache if no exact match is found
-        - v1-dependencies-
   save-cache-dependencies: &save-cache-dependencies
     save_cache:
       paths:
@@ -44,13 +42,12 @@ references:
   restore-cache-pyenv: &restore-cache-pyenv
     restore_cache:
       keys:
-        - v1-pyenv-{{ checksum ".python-version" }}
-        - v1-pyenv-
+        - v2-pyenv-{{ checksum ".python-version" }}
   save-cache-pyenv: &save-cache-pyenv
     save_cache:
       paths:
-       - ~/.pyenv
-      key: v1-pyenv-{{ checksum ".python-version" }}
+       - /opt/circleci/.pyenv/versions
+      key: v2-pyenv-{{ checksum ".python-version" }}
   phial: &phial
     run:
       name: Run integration tests using Phial
