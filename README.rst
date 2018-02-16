@@ -5,6 +5,8 @@ Puppeter - an automatic puppet installer
 
 .. image:: https://travis-ci.org/coi-gov-pl/puppeter.svg?branch=develop
     :target: https://travis-ci.org/coi-gov-pl/puppeter
+.. image:: https://circleci.com/gh/coi-gov-pl/puppeter.svg?style=svg
+    :target: https://circleci.com/gh/coi-gov-pl/puppeter
 .. image:: https://coveralls.io/repos/github/coi-gov-pl/puppeter/badge.svg?branch=feature%2Finstall-puppet-agent
     :target: https://coveralls.io/github/coi-gov-pl/puppeter?branch=feature%2Finstall-puppet-agent
 .. image:: https://img.shields.io/pypi/v/puppeter.svg
