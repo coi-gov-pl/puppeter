@@ -5,3 +5,4 @@ if ! rpm -q 'puppet-agent'; then
     yum install -y puppet-agent
     reload_shell
 fi
+set -e

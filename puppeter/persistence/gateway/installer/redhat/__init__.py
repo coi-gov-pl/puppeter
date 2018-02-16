@@ -6,6 +6,7 @@ from puppeter.persistence.gateway.installer.linux import LinuxInstallerGateway
 from puppeter.persistence.gateway.installer.redhat.pc3x import RedHatPC3xConfigurer
 from puppeter.persistence.gateway.installer.redhat.pc4x import RedHatPC4xConfigurer
 from puppeter.persistence.gateway.installer.redhat.pc5x import RedHatPC5xConfigurer
+from puppeter.persistence.gateway.installer.redhat.system import RedHatSystemConfigurer
 
 
 @Named('redhat')
@@ -25,6 +26,7 @@ class RedHatInstallerGateway(LinuxInstallerGateway):
 
 
 container.bind(InstallerGateway, RedHatInstallerGateway)
+container.bind(Configurer, RedHatSystemConfigurer)
 container.bind(Configurer, RedHatPC3xConfigurer)
 container.bind(Configurer, RedHatPC4xConfigurer)
 container.bind(Configurer, RedHatPC5xConfigurer)

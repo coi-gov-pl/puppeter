@@ -11,12 +11,12 @@ def sut():
 
 
 @pytest.mark.debian9
-def test_simple_pc4x_on_debian_9(phial, capsys, regex):
+def test_agent_system_on_debian_9(phial, capsys, regex):
     with capsys.disabled():
         acceptance = PuppeterAcceptance(phial)
 
         acceptance.install_puppeter()
-        acceptance.run_puppeter('simple-pc4x.yml')
+        acceptance.run_puppeter('agent-system.yml')
 
         exitcode, output, error = phial.exec('puppet --version', capture=True)
         assert error == ''
@@ -25,12 +25,26 @@ def test_simple_pc4x_on_debian_9(phial, capsys, regex):
 
 
 @pytest.mark.debian9
-def test_simple_pc5x_on_debian_9(phial, capsys, regex):
+def test_agent_pc4x_on_debian_9(phial, capsys, regex):
     with capsys.disabled():
         acceptance = PuppeterAcceptance(phial)
 
         acceptance.install_puppeter()
-        acceptance.run_puppeter('simple-pc5x.yml')
+        acceptance.run_puppeter('agent-pc4x.yml')
+
+        exitcode, output, error = phial.exec('puppet --version', capture=True)
+        assert error == ''
+        regex.pattern(PuppeterAcceptance.PUPPET_VER_4).matches(output)
+        assert exitcode == 0
+
+
+@pytest.mark.debian9
+def test_agent_pc5x_on_debian_9(phial, capsys, regex):
+    with capsys.disabled():
+        acceptance = PuppeterAcceptance(phial)
+
+        acceptance.install_puppeter()
+        acceptance.run_puppeter('agent-pc5x.yml')
 
         exitcode, output, error = phial.exec('puppet --version', capture=True)
         assert error == ''

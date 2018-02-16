@@ -8,3 +8,4 @@ if ! rpm -q puppetlabs-release-pc1; then
     rm 'puppetlabs-release-pc1-@{abbr}-@{major}.noarch.rpm'
     cd -
 fi
+set -e

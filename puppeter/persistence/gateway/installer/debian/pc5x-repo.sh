@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 set +e
-if ! dpkg -l 'puppet5-release' | grep -q ii; then
+if ! dpkg -l 'puppet5-release' | grep -qE '^ii'; then
     set -e
     cd /tmp
     wget 'https://apt.puppetlabs.com/puppet5-release-@{codename}.deb'
@@ -9,3 +9,4 @@ if ! dpkg -l 'puppet5-release' | grep -q ii; then
     cd -
     apt-get update
 fi
+set -e
