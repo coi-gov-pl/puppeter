@@ -1,9 +1,12 @@
 from typing import Union
 
+import pytest
+
 from puppeter.container import NamedBean
 from puppeter.domain.model.installer import WithOptions, After4xCollectionInstaller, JavaMemorySpec
 
 
+@pytest.mark.skip('not yet implemented')
 def test_rubygems_installer_named_bean():
     # given
     from puppeter.domain.model.installer import RubygemsInstaller
@@ -14,6 +17,7 @@ def test_rubygems_installer_named_bean():
     assert bean_name is 'gem'
 
 
+@pytest.mark.skip('not yet implemented')
 def test_rubygems_installer_values():
     # given
     from puppeter.domain.model.installer import RubygemsInstaller, Mode
@@ -26,6 +30,7 @@ def test_rubygems_installer_values():
     assert mode is Mode.Agent
 
 
+@pytest.mark.skip('not yet implemented')
 def test_rubygems_installer_raw_options():
     # given
     from puppeter.domain.model.installer import RubygemsInstaller
@@ -40,6 +45,7 @@ def test_rubygems_installer_raw_options():
     }
 
 
+@pytest.mark.skip('not yet implemented')
 def test_rubygems_installer_read_raw_options():
     # given
     from puppeter.domain.model.installer import RubygemsInstaller, Mode
@@ -57,6 +63,7 @@ def test_rubygems_installer_read_raw_options():
     assert installer.is_after_4x() is False
 
 
+@pytest.mark.skip('not yet implemented')
 def test_rubygems_installer_read_raw_options_invalid():
     # given
     from puppeter.domain.model.installer import RubygemsInstaller, Mode

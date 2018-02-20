@@ -9,6 +9,9 @@ class DebianSystemConfigurer(BaseDebianConfigurer):
     def _collect_repo(self, collector):
         pass
 
+    def _is_wget_needed(self):
+        return False
+
     def _collect_agent(self, collector):
         collector.collect_from_file('Puppet agent setup', 'puppet-system.sh')
 
