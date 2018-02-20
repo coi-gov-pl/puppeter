@@ -45,7 +45,6 @@ def test_rubygems_installer_raw_options():
     }
 
 
-@pytest.mark.skip('not yet implemented')
 def test_rubygems_installer_read_raw_options():
     # given
     from puppeter.domain.model.installer import RubygemsInstaller, Mode
@@ -63,7 +62,6 @@ def test_rubygems_installer_read_raw_options():
     assert installer.is_after_4x() is False
 
 
-@pytest.mark.skip('not yet implemented')
 def test_rubygems_installer_read_raw_options_invalid():
     # given
     from puppeter.domain.model.installer import RubygemsInstaller, Mode
