@@ -88,11 +88,11 @@ setup(
     ],
 
     # What does your project relate to?
-    keywords='puppet installation devops',
+    keywords='puppet installation devops unattended',
 
     # You can just specify the packages manually here if your project is
     # simple. Or you can use find_packages().
-    packages=find_packages(exclude=['contrib', 'docs', 'tests']),
+    packages=find_packages(exclude=['contrib', 'docs', 'tests', 'integration_tests']),
 
     # Alternatively, if you want to distribute just a my_module.py, uncomment
     # this:
@@ -116,7 +116,7 @@ setup(
     # $ pip install -e .[dev,test]
     extras_require={
         'dev': ['setuptools>=18.5', 'check-manifest'],
-        'test': ['pytest', 'pytest-cov', 'python-coveralls'],
+        'test': ['pytest', 'pytest-cov', 'python-coveralls', 'colorama', 'paramiko'],
     },
 
     # If there are data files included in your packages that need to be

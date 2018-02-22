@@ -7,3 +7,11 @@ recursive-include puppeter *.pyi
 recursive-include puppeter *.sh
 recursive-include puppeter *.pp
 
+# Include integration tests sources
+recursive-include integration_tests *.py
+recursive-include integration_tests *.sh
+recursive-include integration_tests *.yml
+recursive-include integration_tests */Dockerfile
+
+# Exclude environment files
+prune .circleci
