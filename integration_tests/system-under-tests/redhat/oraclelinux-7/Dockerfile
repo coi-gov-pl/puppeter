@@ -1,7 +1,5 @@
 FROM oraclelinux:7
 
-RUN yum install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
-RUN yum install -y openssh-server python-pip
 RUN mkdir /var/run/sshd
 RUN ssh-keygen -t rsa -f /etc/ssh/ssh_host_rsa_key -N ''
 RUN echo 'root:phial' | chpasswd
@@ -14,6 +12,11 @@ ENV NOTVISIBLE "in users profile"
 RUN echo "export VISIBLE=now" >> /etc/profile
 
 ENV LANG en_US.UTF-8
+
+COPY ./setup.sh /puppeter-setup.sh
+RUN chmod +x /puppeter-setup.sh
+ENV MODE dependencies
+RUN /puppeter-setup.sh
 
 EXPOSE 22
 CMD ["/usr/sbin/sshd", "-D"]

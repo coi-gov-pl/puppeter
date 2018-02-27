@@ -2,6 +2,8 @@
 version: '3'
 services:
   sut:
-    build: ./
+    build:
+      context: ../../../..
+      dockerfile: integration_tests/system-under-tests/redhat/oraclelinux-6/Dockerfile
     ports:
       - 22
