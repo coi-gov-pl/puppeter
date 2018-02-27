@@ -59,8 +59,7 @@ class SystemInstaller(Installer):
         Installer.__init__(self)
 
 
-# TODO: implement GEM installer - https://github.com/coi-gov-pl/puppeter/issues/18
-# @Named('gem')
+@Named('gem')
 class RubygemsInstaller(Installer):
     def is_after_4x(self):
         return GemRequirement(self.version()).satified_by('4.0')
