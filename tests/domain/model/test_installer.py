@@ -3,7 +3,7 @@ from typing import Union
 import pytest
 
 from puppeter.container import NamedBean
-from puppeter.domain.model.installer import WithOptions, After4xCollectionInstaller, JavaMemorySpec
+from puppeter.domain.model.installer import WithOptions, After4xCollectionInstaller
 
 
 @pytest.mark.skip('not yet implemented')
