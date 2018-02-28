@@ -1,5 +1,6 @@
 FROM oraclelinux:6
 
+RUN yum install -y openssh-server
 RUN mkdir /var/run/sshd
 RUN ssh-keygen -t rsa -f /etc/ssh/ssh_host_rsa_key -N ''
 RUN echo 'root:phial' | chpasswd

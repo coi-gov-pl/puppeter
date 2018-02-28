@@ -76,7 +76,7 @@ if [ $osfamily == redhat ]; then
       run yum-config-manager --enable public_ol6_software_collections
       run yum install -y python27-python-pip
     fi
-    echo 'source /opt/rh/python27/enable' >> ~/.profile
+    echo 'source /opt/rh/python27/enable' >> /etc/profile.d/python27.sh
     run source /opt/rh/python27/enable
 elif [ $majversion == 7 ]; then
     if [ $os == centos ]; then
