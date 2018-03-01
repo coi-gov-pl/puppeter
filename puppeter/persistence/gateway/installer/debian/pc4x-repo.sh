@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 set +e
-if ! dpkg -l 'puppetlabs-release-pc1' | grep -q ii; then
+if ! dpkg -l 'puppetlabs-release-pc1' | grep -qE '^ii'; then
     set -e
     cd /tmp
     wget 'https://apt.puppetlabs.com/puppetlabs-release-pc1-@{codename}.deb'
@@ -9,3 +9,4 @@ if ! dpkg -l 'puppetlabs-release-pc1' | grep -q ii; then
     cd -
     apt-get update
 fi
+set -e

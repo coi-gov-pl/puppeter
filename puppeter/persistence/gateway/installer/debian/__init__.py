@@ -5,6 +5,7 @@ from puppeter.domain.gateway.installer import InstallerGateway
 from puppeter.persistence.gateway.installer.debian.pc3x import DebianPC3xConfigurer
 from puppeter.persistence.gateway.installer.debian.pc4x import DebianPC4xConfigurer
 from puppeter.persistence.gateway.installer.debian.pc5x import DebianPC5xConfigurer
+from puppeter.persistence.gateway.installer.debian.system import DebianSystemConfigurer
 from puppeter.persistence.gateway.installer.linux import LinuxInstallerGateway
 
 
@@ -27,3 +28,4 @@ container.bind(InstallerGateway, DebianInstallerGateway)
 container.bind(Configurer, DebianPC3xConfigurer)
 container.bind(Configurer, DebianPC4xConfigurer)
 container.bind(Configurer, DebianPC5xConfigurer)
+container.bind(Configurer, DebianSystemConfigurer)

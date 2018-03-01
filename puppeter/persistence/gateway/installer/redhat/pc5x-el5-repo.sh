@@ -8,3 +8,4 @@ if ! rpm -q puppet5-release; then
     rm 'puppet5-release-@{abbr}-@{major}.noarch.rpm'
     cd -
 fi
+set -e

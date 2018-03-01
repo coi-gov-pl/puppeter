@@ -124,7 +124,7 @@ class Container:
         for bean in self.__get_all_beans(cls):
             if bean.name() == bean_name:
                 return bean.impl(*args, **kwargs)
-        raise ValueError('Bean named %s has not been found for class %s' % (bean_name, cls))
+        raise ValueError('Bean named \'%s\' has not been found for class %s' % (bean_name, cls))
 
     def get_all_with_name_starting_with(self, cls, name_prefix, *args, **kwargs):
         # type: (Type[T], str, Any, Any) -> Sequence[T]

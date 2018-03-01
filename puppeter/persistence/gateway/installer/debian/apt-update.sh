@@ -5,6 +5,9 @@ function getLastAptGetUpdate() {
 
     echo $((nowDate - aptDate))
 }
+set +xe
 if [[ "$(getLastAptGetUpdate)" -gt '@{interval}' ]]; then
+    set -xe
     apt-get update -m
 fi
+set -xe

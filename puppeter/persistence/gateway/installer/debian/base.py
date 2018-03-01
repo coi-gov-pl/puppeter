@@ -18,12 +18,16 @@ class BaseDebianConfigurer(with_metaclass(ABCMeta, Configurer)):
         collector.collect_from_template('apt system update',
                                         'apt-update.sh',
                                         dict(interval=self.UPDATE_INTERVAL))
-        collector.collect_from_file('wget downloader', 'wget.sh')
+        if self._is_wget_needed():
+            collector.collect_from_file('wget downloader', 'wget.sh')
         self._collect_repo(collector)
         self._collect_agent(collector)
         if self._installer.mode() == Mode.Server:
             self._collect_server(collector)
         return collector.lines()
+
+    def _is_wget_needed(self):
+        return True
 
     @abstractmethod
     def _collect_repo(self, collector):
