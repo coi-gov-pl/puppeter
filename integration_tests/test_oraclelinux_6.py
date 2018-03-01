@@ -11,12 +11,12 @@ def sut():
 
 
 @pytest.mark.oraclelinux6
-def test_simple_pc3x_on_oraclelinux_6(phial, capsys, regex):
+def test_agent_pc3x_on_oraclelinux_6(phial, capsys, regex):
     with capsys.disabled():
         acceptance = PuppeterAcceptance(phial)
 
         acceptance.install_puppeter()
-        acceptance.run_puppeter('simple-pc3x.yml')
+        acceptance.run_puppeter('agent-pc3x.yml')
 
         exitcode, output, error = phial.exec('puppet --version', capture=True)
         assert error == ''
@@ -25,12 +25,12 @@ def test_simple_pc3x_on_oraclelinux_6(phial, capsys, regex):
 
 
 @pytest.mark.oraclelinux6
-def test_simple_pc4x_on_oraclelinux_6(phial, capsys, regex):
+def test_agent_pc4x_on_oraclelinux_6(phial, capsys, regex):
     with capsys.disabled():
         acceptance = PuppeterAcceptance(phial)
 
         acceptance.install_puppeter()
-        acceptance.run_puppeter('simple-pc4x.yml')
+        acceptance.run_puppeter('agent-pc4x.yml')
 
         exitcode, output, error = phial.exec('puppet --version', capture=True)
         assert error == ''
@@ -39,12 +39,12 @@ def test_simple_pc4x_on_oraclelinux_6(phial, capsys, regex):
 
 
 @pytest.mark.oraclelinux6
-def test_simple_pc5x_on_oraclelinux_6(phial, capsys, regex):
+def test_agent_pc5x_on_oraclelinux_6(phial, capsys, regex):
     with capsys.disabled():
         acceptance = PuppeterAcceptance(phial)
 
         acceptance.install_puppeter()
-        acceptance.run_puppeter('simple-pc5x.yml')
+        acceptance.run_puppeter('agent-pc5x.yml')
 
         exitcode, output, error = phial.exec('puppet --version', capture=True)
         assert error == ''

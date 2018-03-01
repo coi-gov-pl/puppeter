@@ -15,4 +15,32 @@ Puppeter - an automatic puppet installer
 
 A commandline tool to ease the installation of typical puppetserver - agent installation. It uses a interactive mode and batch mode as well. Batch mode utilizes a answer files for full automatic operation.
 
+Installation
+------------
+
+To install Puppeter simple use PIP:
+
+.. code-block:: bash
+
+  pip install puppeter
+
+If you like to install puppeter on clean operating system with automatic installer execute:
+
+.. code-block:: bash
+
+  curl https://raw.githubusercontent.com/coi-gov-pl/puppeter/master/setup.sh | bash
+
+It will install PIP and compatibile Python (2.7+)
+
+The installer script is supported for:
+
+* Debian 8
+* Debian 9
+* Ubuntu 14.04
+* Ubuntu 16.04
+* CentOS 6
+* CentOS 7
+* OracleLinux 6
+* OracleLinux 7
+
 **TODO: Write more later**

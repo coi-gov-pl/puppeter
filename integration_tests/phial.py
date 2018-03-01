@@ -139,8 +139,8 @@ class Phial:
 
     class CaptureOutputHandler(OutputHandler):
         def __init__(self):
-            self.outbuf = ''
-            self.errbuf = ''
+            self.outbuf = b''
+            self.errbuf = b''
 
         def out(self, data):
             self.outbuf += data
@@ -149,10 +149,10 @@ class Phial:
             self.errbuf += data
 
         def collected_output(self):
-            return self.outbuf
+            return self.outbuf.decode(errors='ignore')
 
         def collected_error_output(self):
-            return self.errbuf
+            return self.errbuf.decode(errors='ignore')
 
     class PrintOutputHandler(OutputHandler):
         def __init__(self):
@@ -183,22 +183,24 @@ class Phial:
 
         def read_chunk(self, size=32):
             if self.__channel.recv_stderr_ready():
-                data = self.__channel.recv_stderr(size).decode(errors="ignore")
+                data = self.__channel.recv_stderr(size)
                 self.__handler.err(data)
             if self.__channel.recv_ready():
-                data = self.__channel.recv(size).decode(errors="ignore")
+                data = self.__channel.recv(size)
                 self.__handler.out(data)
 
     class OutputBuffer:
         def __init__(self):
-            self.buf = ''
+            self.buf = b''
 
         def recv(self, data):
             self.buf += data
 
         def lines_collected(self):
             # type: () -> Sequence[str]
-            splited = self.buf.splitlines(keepends=True)
+            splited = self.buf\
+                .decode(errors='ignore')\
+                .splitlines(keepends=True)
             collected = []
             newbuf = ''
             for line in splited:
@@ -206,12 +208,12 @@ class Phial:
                     collected.append(line.rstrip())
                 else:
                     newbuf += line
-            self.buf = newbuf
+            self.buf = newbuf.encode()
             return collected
 
     def _bashify(self, command):
         filtered = command.replace("'", "\\'")
-        return "bash -lc '{command}'".format(command=filtered)
+        return "bash -leo pipefail -c '{command}'".format(command=filtered)
 
 
 @pytest.fixture
@@ -249,7 +251,7 @@ def execute(command, success_codes=(0,)):
         output = error.output or b''
         status = error.returncode
         command = error.cmd
-    output = output.decode('utf-8')
+    output = output.decode(errors='ignore')
     if status not in success_codes:
         raise Exception(
             'Command %r returned %d: """%s""".' % (command, status, output)
@@ -267,15 +269,15 @@ def execute_streaming(command, success_codes=(0,)):
     while True:
         retcode = p.poll()
         if retcode is not None:
-            handler.err(p.stderr.read().decode(errors='ignore'))
-            handler.out(p.stdout.read().decode(errors='ignore'))
+            handler.err(p.stderr.read())
+            handler.out(p.stdout.read())
             break
         while len(select.select([p.stderr], [], [], 0)[0]) == 1:
-            contents = p.stderr.read(1).decode(errors='ignore')
-            handler.err(contents)
+            data = p.stderr.read(1)
+            handler.err(data)
         while len(select.select([p.stdout], [], [], 0)[0]) == 1:
-            contents = p.stdout.read(1).decode(errors='ignore')
-            handler.out(contents)
+            data = p.stdout.read(1)
+            handler.out(data)
         time.sleep(0.01)
     if retcode not in success_codes:
         raise Exception(

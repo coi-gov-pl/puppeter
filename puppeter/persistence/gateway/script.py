@@ -10,7 +10,7 @@ class BashScriptPostProcessor(ScriptPostProcessor):
 
     def postprocess(self, commands):
         ln = "\n"
-        header = ['#!/usr/bin/env bash', 'set -ex', '']
+        header = ['#!/usr/bin/env bash', 'set -eux -o pipefail', '']
         stripped = self.__strip_shebang(ln.join(commands)).split(ln)
         return header + stripped
 

@@ -28,6 +28,6 @@ class PuppeterAcceptance:
         assert exitcode == 0
 
     def __script(self, script, arg=''):
-        command = 'bash -e %s/integration_tests/scripts/%s %s' % (remote_dir, script, arg)
+        command = 'bash -leo pipefail %s/integration_tests/scripts/%s %s' % (remote_dir, script, arg)
         exitcode, out, err = self.__phial.exec(command.strip())
         return exitcode

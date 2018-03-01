@@ -1,6 +1,6 @@
 FROM ubuntu:16.04
 
-RUN apt-get update && apt-get install -y openssh-server python-pip
+RUN apt-get update && apt-get install -y openssh-server
 RUN mkdir /var/run/sshd
 RUN echo 'root:phial' | chpasswd
 RUN sed -i 's/PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config
@@ -10,6 +10,11 @@ RUN sed 's@session\s*required\s*pam_loginuid.so@session optional pam_loginuid.so
 
 ENV NOTVISIBLE "in users profile"
 RUN echo "export VISIBLE=now" >> /etc/profile
+
+COPY ./setup.sh /puppeter-setup.sh
+RUN chmod +x /puppeter-setup.sh
+ENV MODE dependencies
+RUN /puppeter-setup.sh
 
 EXPOSE 22
 CMD ["/usr/sbin/sshd", "-D"]

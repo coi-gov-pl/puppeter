@@ -50,6 +50,15 @@ class Installer(WithOptions):
         return self.__puppetconf
 
 
+@Named('system')
+class SystemInstaller(Installer):
+    def is_after_4x(self):
+        return False
+
+    def __init__(self):
+        Installer.__init__(self)
+
+
 @Named('gem')
 class RubygemsInstaller(Installer):
     def is_after_4x(self):
