@@ -16,8 +16,3 @@ def get_logger(cls):
 
 def __fullname(cls):
     return cls.__module__ + "." + cls.__name__
-
-
-if __name__ == '__main__':
-    from puppeter.main import main
-    main()
