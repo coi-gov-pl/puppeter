@@ -18,3 +18,4 @@ recursive-include integration_tests */Dockerfile
 
 # Exclude environment files
 prune .circleci
+prune .github
