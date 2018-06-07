@@ -4,7 +4,7 @@ from logging import Logger
 from typing import Type
 
 # The version of the app
-__version__ = '0.8.0'
+__version__ = '0.8.1'
 __program__ = 'puppeter'
 
 
@@ -16,8 +16,3 @@ def get_logger(cls):
 
 def __fullname(cls):
     return cls.__module__ + "." + cls.__name__
-
-
-if __name__ == '__main__':
-    from puppeter.main import main
-    main()

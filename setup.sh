@@ -102,5 +102,5 @@ elif [ $osfamily == debian ]; then
   fi
 fi
 if [ $MODE == puppeter ]; then
-  run pip install puppeter
+  run LC_ALL=C pip install puppeter
 fi
