@@ -5,4 +5,4 @@ root=$(dirname $(dirname $(dirname ${here})))
 
 set -x
 
-pip install -e ${root}
+LC_ALL=C pip install -e ${root}
