@@ -73,9 +73,9 @@ if [ $osfamily == redhat ]; then
       run yum install -y python27-python-pip
     fi
     if [ $os == oraclelinux ]; then
-      run yum install -y yum-utils
+      run yum install -y yum-utils gcc
       run yum-config-manager --enable public_ol6_software_collections
-      run yum install -y python27-python-pip
+      run yum install -y python27-python-pip python27-python-devel
     fi
     echo 'source /opt/rh/python27/enable' >> /etc/profile.d/python27.sh
     run source /opt/rh/python27/enable
