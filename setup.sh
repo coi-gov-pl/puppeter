@@ -7,7 +7,6 @@ RHEL_SED_VERSION_PARSE='s/^[^0-9]+([0-9]+\.[0-9]+).*$/\1/'
 COLOR_NC='\e[0m' # No Color
 COLOR_LIGHT_BLUE='\e[1;34m'
 COLOR_LIGHT_RED='\e[1;31m'
-COLOR_LIGHT_GREEN='\e[1;32m'
 RUN=${RUN:-1}
 DEBUG=${DEBUG:-0}
 SUDO=${SUDO:-1}
@@ -44,7 +43,7 @@ fi
 majversion=$(echo $version | cut -d. -f1)
 
 run() {
-  command="$@"
+  command="$*"
   if [[ $EUID -ne 0 ]] && [ $SUDO == 1 ]; then
     command="sudo -i ${command}"
   fi
@@ -60,8 +59,9 @@ unsupported() {
 }
 
 last_aptget_update() {
-    local apt_date="$(stat -c %Y '/var/cache/apt')"
-    local now_date="$(date +'%s')"
+    local apt_date now_date
+    apt_date="$(stat -c %Y '/var/cache/apt')"
+    now_date="$(date +'%s')"
 
     echo $((now_date - apt_date))
 }
@@ -73,6 +73,7 @@ if [ $osfamily == redhat ]; then
       run yum install -y python27-python-pip
     fi
     if [ $os == oraclelinux ]; then
+      run yum install -y yum-utils
       run yum-config-manager --enable public_ol6_software_collections
       run yum install -y python27-python-pip
     fi
